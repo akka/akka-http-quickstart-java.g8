@@ -39,6 +39,17 @@ sbt runMain com.example.HttpServerHttpApp
 ```
 to directly run the specified file.
 
+This template also provides build descriptors for maven and gradle. You can use any of the following commands to run 
+the application:
+```
+mvn exec:exec
+```
+or
+```
+gradle run
+```
+Both commands run `com.example.HttpServer` by default.
+
 
 Template license
 ----------------
