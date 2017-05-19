@@ -2,7 +2,7 @@ A [Giter8][g8] template for Akka HTTP in Java
 
 Prerequisites:
 - JDK 8
-- sbt 0.13.13 or higher
+- [sbt][sbt] 0.13.13 or higher ([download here][sbt_download])
 
 Open a console and run the following command to apply this template:
  ```
@@ -60,3 +60,5 @@ and neighboring rights to this template to the public domain worldwide.
 This template is distributed without any warranty. See <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 [g8]: http://www.foundweekends.org/giter8/
+[sbt]: http://www.scala-sbt.org/
+[sbt_download]: http://www.scala-sbt.org/download.html
