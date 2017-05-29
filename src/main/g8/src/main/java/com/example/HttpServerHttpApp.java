@@ -11,9 +11,10 @@ class HttpServerHttpApp extends HttpApp {
 
   /**
    * Routes that this WebServer must handle are defined here
+   * Please note this method was named `route` in versions prior to 10.0.7
    */
   @Override
-  protected Route route() {
+  protected Route routes() {
     return route(
       pathEndOrSingleSlash(() -> // Listens to the top `/`
         complete("Server up and running") // Completes with some text

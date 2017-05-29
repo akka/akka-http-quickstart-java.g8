@@ -14,7 +14,7 @@ public class HttpServerHttpAppTest extends JUnitRouteTest {
   @Before
   public void initClass() {
     HttpServerHttpApp server = new HttpServerHttpApp();
-    appRoute = testRoute(server.route());
+    appRoute = testRoute(server.routes());
   }
 
   @Test
