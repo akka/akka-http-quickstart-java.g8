@@ -1,4 +1,5 @@
-package com.example;
+package com.lightbend.akka.http.sample;
+
 
 import akka.NotUsed;
 import akka.actor.ActorSystem;

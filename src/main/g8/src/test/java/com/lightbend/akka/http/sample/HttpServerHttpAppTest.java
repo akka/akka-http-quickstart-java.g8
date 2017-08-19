@@ -1,4 +1,5 @@
-package com.example;
+package com.lightbend.akka.http.sample;
+
 
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.StatusCodes;
