@@ -21,28 +21,30 @@ public class QuickstartServer extends AllDirectives {
 
   // set up ActorSystem and other dependencies here
   //#main-class
-  private final SimpleRoutes simpleRoutes;
+  private final UserRoutes userRoutes;
 
-  public HttpServer() {
-        simpleRoutes = new SimpleRoutes();
+  public QuickstartServer() {
+        userRoutes = new UserRoutes();
   }
   //#main-class
 
   public static void main(String[] args) throws Exception {
     // boot up server using the route as defined below
-    ActorSystem system = ActorSystem.create("routes");
+    ActorSystem system = ActorSystem.create("helloAkkaHttpServer");
 
     //#server-bootstrapping
     final Http http = Http.get(system);
     final ActorMaterializer materializer = ActorMaterializer.create(system);
     //#server-bootstrapping
 
+    ActorRef userRegistryActor = system.actorOf(UserRegistryActor.props, "userRegistryActor")
+
     //#http-server
     //In order to access all directives we need an instance where the routes are define.
     HttpServer app = new HttpServer();
 
-    final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = app.createRoute().flow(system, materializer);
-    final CompletionStage<ServerBinding> binding = http.bindAndHandle(routeFlow,
+    //final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = app.createRoute().flow(system, materializer);
+    final CompletionStage<ServerBinding> binding = http.bindAndHandle(userRoutes,
       ConnectHttp.toHost("localhost", 8080), materializer);
 
     System.out.println("Server online at http://localhost:8080/\nPress RETURN to stop...");
@@ -60,7 +62,7 @@ public class QuickstartServer extends AllDirectives {
    * Note that routes might be defined in separated classes like the current case
    */
   protected Route createRoute() {
-    return route(BaseRoutes.baseRoutes(), simpleRoutes.simpleRoutes());
+    return userRoutes.simpleRoutes;
   }
 }
 //#main-class

@@ -1,48 +1,54 @@
 package com.lightbend.akka.http.sample;
 
 
+//#test-top
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
 import org.junit.Before;
 import org.junit.Test;
+import akka.http.javadsl.marshallers.jackson.Jackson;
 
+//#set-up
 public class HttpServerHttpAppTest extends JUnitRouteTest {
-
+  //#test-top
   private TestRoute appRoute;
-
+  //#set-up
   @Before
   public void initClass() {
-    HttpServerHttpApp server = new HttpServerHttpApp();
-    appRoute = testRoute(server.routes());
+    QuickstartServer server = new QuickstartServer();
+    appRoute = testRoute(server.createRoute());
   }
 
+  //#actual-test
   @Test
-  public void testHello() {
-    appRoute.run(HttpRequest.GET("/hello"))
+  public void testNoUsers() {
+    appRoute.run(HttpRequest.GET("/users"))
       .assertStatusCode(StatusCodes.OK)
-      .assertEntity("<html><body><h1>Say hello to akka-http</h1></body></html>");
+            .assertMediaType("application/json")
+      .assertEntity("{\"users\":[]}");
   }
+  //#actual-test
+  //#testing-post
+  @Test
+  public void testHandlePOST() {
+    User user = new User("Kapi", 42, "jp")
+    appRoute.run(HttpRequest.POST("/users").withEntity(Jackson.<User>marshaller(user)))
+      .assertStatusCode(StatusCodes.CREATED)
+    .assertMediType("application/json")
+    .assertEntity("{\"description\":\"User Kapi created.\"}");
+  }
+  //#testing-post
 
   @Test
-  public void testHandleOnlyGET() {
-    appRoute.run(HttpRequest.POST("/hello"))
-      .assertStatusCode(StatusCodes.METHOD_NOT_ALLOWED);
-  }
-
-  @Test
-  public void testGetTopSlash() {
-    appRoute.run(HttpRequest.GET("/"))
+  public void testRemove() {
+    appRoute.run(HttpRequest.DELETE("/users/Kapi"))
       .assertStatusCode(StatusCodes.OK)
-      .assertEntity("Server up and running");
-  }
+      .assertEntity("{\"description\":\"User Kapi deleted.\"}")
+            .assertMediType("application/json")
 
-  @Test
-  public void testPostTopSlash() {
-    appRoute.run(HttpRequest.POST("/"))
-      .assertStatusCode(StatusCodes.OK)
-      .assertEntity("Server up and running");
   }
-
+  //#set-up
 }
+//#set-up
