@@ -7,15 +7,16 @@ lazy val root = (project in file(".")).
       organization := "com.example",
       scalaVersion := "2.12.3"
     )),
-    name := "$name$",
+    name := "TestProject",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
+      "com.typesafe.akka" %% "akka-http-jackson"    % akkaHttpVersion,
 
       "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
-      "junit"              % "junit"             % "4.12"          % Test
+      "junit"              % "junit"             % "4.12"          % Test,
+      "com.novocode"       % "junit-interface"   % "0.10"          % Test
     ),
 
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")
