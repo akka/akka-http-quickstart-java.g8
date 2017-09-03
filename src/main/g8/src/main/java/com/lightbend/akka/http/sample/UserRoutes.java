@@ -1,31 +1,42 @@
 package com.lightbend.akka.http.sample;
 
-import akka.http.javadsl.server.Route;
-
-import akka.dispatch.*;
-import akka.util.Timout;
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import akka.http.javadsl.marshallers.jackson.Jackson;
 import akka.http.javadsl.model.StatusCodes;
-import java.util.concurrent.CompletableFuture;
-import static akka.http.javadsl.server.Directives.*;
-import static akka.http.javadsl.unmarshalling.StringUnmarshallers.INTEGER;
+import akka.http.javadsl.server.AllDirectives;
+import akka.http.javadsl.server.PathMatchers;
+import akka.http.javadsl.server.Route;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import static akka.japi.Util.classTag;
+import static scala.compat.java8.FutureConverters.toJava;
 
 /**
  * Routes can be defined in separated classes like shown in here
  */
 //#user-routes-class
-public class UserRoutes {
+public class UserRoutes extends AllDirectives {
     //#user-routes-class
+    final private ActorRef userRegistryActor;
+    final private LoggingAdapter log;
 
-    LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
 
-
-    // other dependencies that UserRoutes use
-        final ActorRef userRegistryActor;
+    public UserRoutes(ActorSystem system, ActorRef userRegistryActor) {
+        this.userRegistryActor = userRegistryActor;
+        log = Logging.getLogger(system, this);
+    }
 
     // Required by the `ask` (?) method below
-    final Timeout timeout = new Timeout(Duration.parse("5 seconds")) // usually we'd obtain the timeout from the system's configuration
+    Timeout timeout = new Timeout(Duration.create(5, TimeUnit.SECONDS)); // usually we'd obtain the timeout from the system's configuration
 
     /**
      * This method creates one route (of possibly many more that will be part of your Web App)
@@ -33,129 +44,62 @@ public class UserRoutes {
     //#all-routes
     //#users-get-post
     //#users-get-delete
-    public Route simpleRoutes() {
-       return route(
-               pathPrefix("users", () ->
-                concat(
-                        //#users-get-delete
-                    pathEnd(() ->
-                        concat(
-                            get(() -> {
-                                Future<Users> users = Patters.ask(userRegistryActor, GetUsers, timeout).mapTo(Users.class);
-                                complete(users, Jackson.<Users>marshaller());
-                            }),
-                            post(() -> {
-                                entity(Jackson.unmarshaller(User.class), user -> {
-                                            Future<ActionPerformed> userCreated = Patters.ask(userRegistryActor, new CreateUser(user), timeout);
-                                            onSuccess(userCreated, performed -> {
-                                                log.info("Created user [{}]: {}", user.name, performed.description);
-                                                complete((StatusCodes.Created, performed, Jackson.<ActionPerformed>marshaller()))
-                                            });
-                                });
-                            })
-                        )),
-        //#users-get-post
-        //#users-get-delete
-                    path(PathMatchers.Segment, name ->
-                         concat(
-                             get(() -> {
-                                         //#retrieve-user-info
-                                   Future<Optional<User>> maybeUser = Patters.ask(userRegistryActor, new GetUser(name), timeout).mapTo(Optional<User>.class);
-
-                                rejectEmptyResponse (() ->
-                                                     complete(maybeUser, Jackson.<User>marshaller())
+    public Route routes() {
+        return route(pathPrefix("users", () ->
+                //#users-get-delete
+                route(
+                        pathEnd(() ->
+                                route(
+                                        get(() -> {
+                                                    Future<UserRegistryActor.Users> futureUsers = Patterns.ask(userRegistryActor, new UserRegistryMessages.GetUsers(), timeout)
+                                                            .mapTo(classTag(UserRegistryActor.Users.class));
+                                                    return onSuccess(() -> toJava(futureUsers),
+                                                            users -> complete(StatusCodes.OK, users, Jackson.marshaller()));
+                                                }
+                                        ),
+                                        post(() ->
+                                                entity(Jackson.unmarshaller(UserRegistryActor.User.class), user -> {
+                                                    Future<UserRegistryMessages.ActionPerformed> userCreated =
+                                                            Patterns.ask(userRegistryActor, new UserRegistryMessages.CreateUser(user), timeout)
+                                                                    .mapTo(classTag(UserRegistryMessages.ActionPerformed.class));
+                                                    return onSuccess(() -> toJava(userCreated),
+                                                            performed -> {
+                                                                log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
+                                                                return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
+                                                            });
+                                                }))
                                 )
-                                         //#retrieve-user-info
-                                    s }),
-                             delete(() -> {
-                                 //#users-delete-logic
-                                 Future<ActionPerformed> userDeleted =
-                                         Patters.ask(userRegistryActor, new DeleteUser(name)).mapTo[ActionPerformed]
-                                 onSuccess(userDeleted, performed -> {
-                                             log.info("Deleted user [{}]: {}", name, performed.description)
-                                             complete((StatusCodes.OK, performed, Jackson.<ActionPerformed>marshaller()))
-                                         }
-                                         //#users-delete-logic
-                                 )
-                             })
-                        )
-                        // return a constant string with a certain content type
-                  )))
+                        ),
+                        //#users-get-post
+                        //#users-get-delete
+                        path(PathMatchers.segment(),
+                                name -> route(
+                                                get(() -> {
+                                                    //#retrieve-user-info
+                                                    Future<Optional> maybeUser = Patterns.ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
+                                                            .mapTo(classTag(Optional.class));
+
+                                                    return rejectEmptyResponse(() ->
+                                                            onSuccess(() -> toJava(maybeUser),
+                                                            performed  -> complete(StatusCodes.OK, (UserRegistryActor.User)performed.get(), Jackson.<UserRegistryActor.User>marshaller())));
+                                                    //#retrieve-user-info
+                                                }),
+                                                delete(() -> {
+                                                    //#users-delete-logic
+                                                    Future<UserRegistryMessages.ActionPerformed> userDeleted =
+                                                            Patterns.ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout).mapTo(classTag(UserRegistryMessages.ActionPerformed.class));
+
+                                                    return onSuccess(() -> toJava(userDeleted),
+                                                            performed -> {
+                                                                log.info("Deleted user [{}]: {}", name, performed.getDescription());
+                                                                return complete(StatusCodes.OK, performed, Jackson.marshaller());
+                                                            }
+                                                            //#users-delete-logic
+                                                    );
+                                                })
+                                        )
+                        ))));
         //#users-get-delete
         //#all-routes
     }
 }
-
-/**
-//#user-routes-class
-trait UserRoutes extends JsonSupport {
-  //#user-routes-class
-
-  // we leave these abstract, since they will be provided by the App
-  implicit def system: ActorSystem
-
-  lazy val log = Logging(system, classOf[UserRoutes])
-
-  // other dependencies that UserRoutes use
-  def userRegistryActor: ActorRef
-
-  // Required by the `ask` (?) method below
-  implicit lazy val timeout = Timeout(5.seconds) // usually we'd obtain the timeout from the system's configuration
-
-  //#all-routes
-  //#users-get-post
-  //#users-get-delete
-  lazy val userRoutes =
-    pathPrefix("users") {
-      concat(
-        //#users-get-delete
-        pathEnd {
-          concat(
-            get {
-              val users: Future[Users] =
-                (userRegistryActor ? GetUsers).mapTo[Users]
-              complete(users)
-            },
-            post {
-              entity(as[User]) { user =>
-                val userCreated: Future[ActionPerformed] =
-                  (userRegistryActor ? CreateUser(user)).mapTo[ActionPerformed]
-                onSuccess(userCreated) { performed =>
-                  log.info("Created user [{}]: {}", user.name, performed.description)
-                  complete((StatusCodes.Created, performed))
-                }
-              }
-            }
-          )
-        },
-        //#users-get-post
-        //#users-get-delete
-        path(Segment) { name =>
-          concat(
-            get {
-              //#retrieve-user-info
-              val maybeUser: Future[Option[User]] =
-                (userRegistryActor ? GetUser(name)).mapTo[Option[User]]
-              rejectEmptyResponse {
-                complete(maybeUser)
-              }
-              //#retrieve-user-info
-            },
-            delete {
-              //#users-delete-logic
-              val userDeleted: Future[ActionPerformed] =
-                (userRegistryActor ? DeleteUser(name)).mapTo[ActionPerformed]
-              onSuccess(userDeleted) { performed =>
-                log.info("Deleted user [{}]: {}", name, performed.description)
-                complete((StatusCodes.OK, performed))
-              }
-              //#users-delete-logic
-            }
-          )
-        }
-      )
-      //#users-get-delete
-    }
-  //#all-routes
-}
-**/

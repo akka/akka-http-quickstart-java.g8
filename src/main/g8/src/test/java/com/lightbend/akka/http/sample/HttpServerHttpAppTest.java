@@ -2,53 +2,63 @@ package com.lightbend.akka.http.sample;
 
 
 //#test-top
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.StatusCodes;
+
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+
+import akka.http.javadsl.model.*;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
 import org.junit.Before;
 import org.junit.Test;
-import akka.http.javadsl.marshallers.jackson.Jackson;
+import akka.http.javadsl.model.HttpRequest;
+import akka.http.javadsl.model.StatusCodes;
+
 
 //#set-up
 public class HttpServerHttpAppTest extends JUnitRouteTest {
-  //#test-top
-  private TestRoute appRoute;
-  //#set-up
-  @Before
-  public void initClass() {
-    QuickstartServer server = new QuickstartServer();
-    appRoute = testRoute(server.createRoute());
-  }
+    //#test-top
+    private TestRoute appRoute;
 
-  //#actual-test
-  @Test
-  public void testNoUsers() {
-    appRoute.run(HttpRequest.GET("/users"))
-      .assertStatusCode(StatusCodes.OK)
-            .assertMediaType("application/json")
-      .assertEntity("{\"users\":[]}");
-  }
-  //#actual-test
-  //#testing-post
-  @Test
-  public void testHandlePOST() {
-    User user = new User("Kapi", 42, "jp")
-    appRoute.run(HttpRequest.POST("/users").withEntity(Jackson.<User>marshaller(user)))
-      .assertStatusCode(StatusCodes.CREATED)
-    .assertMediType("application/json")
-    .assertEntity("{\"description\":\"User Kapi created.\"}");
-  }
-  //#testing-post
+    //#set-up
+    @Before
+    public void initClass() {
+        ActorSystem system = ActorSystem.create("helloAkkaHttpServer");
+        ActorRef userRegistryActor = system.actorOf(UserRegistryActor.props(), "userRegistryActor");
+        QuickstartServer server = new QuickstartServer(system, userRegistryActor);
+        appRoute = testRoute(server.createRoute());
+    }
 
-  @Test
-  public void testRemove() {
-    appRoute.run(HttpRequest.DELETE("/users/Kapi"))
-      .assertStatusCode(StatusCodes.OK)
-      .assertEntity("{\"description\":\"User Kapi deleted.\"}")
-            .assertMediType("application/json")
+    //#actual-test
+    @Test
+    public void testNoUsers() {
+        appRoute.run(HttpRequest.GET("/users"))
+                .assertStatusCode(StatusCodes.OK)
+                .assertMediaType("application/json")
+                .assertEntity("{\"users\":[]}");
+    }
 
-  }
-  //#set-up
+    //#actual-test
+    //#testing-post
+    @Test
+    public void testHandlePOST() {
+        appRoute.run(HttpRequest.POST("/users")
+                .withEntity(MediaTypes.APPLICATION_JSON.toContentType(),
+                        "{\"name\": \"Kapi\", \"age\": 42, \"countryOfResidence\": \"jp\"}"))
+                .assertStatusCode(StatusCodes.CREATED)
+                .assertMediaType("application/json")
+                .assertEntity("{\"description\":\"User Kapi created.\"}");
+    }
+    //#testing-post
+
+    @Test
+    public void testRemove() {
+        appRoute.run(HttpRequest.DELETE("/users/Kapi"))
+                .assertStatusCode(StatusCodes.OK)
+                .assertMediaType("application/json")
+                .assertEntity("{\"description\":\"User Kapi deleted.\"}");
+
+    }
+    //#set-up
 }
 //#set-up

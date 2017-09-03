@@ -1,18 +1,26 @@
 package com.lightbend.akka.http.sample;
 
 import akka.actor.*;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import akka.japi.Creator;
+
 import java.util.*;
 
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
-public class UserRegistryActor extends extends AbstractActor {
+
+public class UserRegistryActor extends AbstractActor {
+
+  LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
 
   //#user-case-classes
-  static class User {
+  public static class User {
     private final String name;
-    private final Int age;
+    private final int age;
     private final String countryOfResidence;
 
-    public User(String name, Int age, String countryOfResidence) {
+    public User(String name, int age, String countryOfResidence) {
       this.name = name;
       this.age = age;
       this.countryOfResidence = countryOfResidence;
@@ -22,7 +30,7 @@ public class UserRegistryActor extends extends AbstractActor {
       return name;
     }
 
-    public Int getAge() {
+    public int getAge() {
       return age;
     }
 
@@ -31,7 +39,7 @@ public class UserRegistryActor extends extends AbstractActor {
     }
   }
 
-  static class Users{
+  public static class Users{
     private final List<User> users;
 
     public Users(List<User> users) {
@@ -46,32 +54,31 @@ public class UserRegistryActor extends extends AbstractActor {
 
 
   static Props props() {
-    return Props.create(UserRegistryActor.class, () -> new UserRegistryActor());
+    return Props.create(UserRegistryActor.class, new UserRegistryActor());
   }
 
   private final List<User> users =new ArrayList<>();
 
   @Override
-  public void createReceive(){
+  public Receive createReceive(){
     return receiveBuilder()
-            .match(GetUsers.class, getUsers -> {
-            getSender().tell(new Users(users.clone));
+            .match(UserRegistryMessages.GetUsers.class, getUsers -> getSender().tell(new Users(users),getSelf()))
+            .match(UserRegistryMessages.CreateUser.class, createUser -> {
+              users.add(createUser.getUser());
+              getSender().tell(new UserRegistryMessages.ActionPerformed(
+                      String.format("User %s created.",createUser.getUser().getName())),getSelf());
             })
-            .match(CreateUser.class, createUser -> {
-              users.add(createUser.getUser())
-              getSender().tell(new ActionPerformed(String.format("User %s created.",createUser.getName())
-            })
-            .match(GetUser.class, getUser -> {
+            .match(UserRegistryMessages.GetUser.class, getUser -> {
               getSender().tell(users.stream()
-                      .filter(user -> user.getName()).equals(getUser.getName()))
-                      .findFirst();
+                      .filter(user -> user.getName().equals(getUser.getName()))
+                      .findFirst(),getSelf());
             })
-            .match(DeleteUser.class, deleteUser -> {
+            .match(UserRegistryMessages.DeleteUser.class, deleteUser -> {
               users.removeIf(user -> user.getName().equals(deleteUser.getName()));
-              getSender().tell(new ActionPerformed(String.format("User %s deleted.",deleteUser.getName())
+              getSender().tell(new UserRegistryMessages.ActionPerformed(String.format("User %s deleted.",deleteUser.getName())),
+                      getSelf());
 
-            })
-            .matchAny(o -> log.info("received unknown message"))
+            }).matchAny(o -> log.info("received unknown message"))
             .build();
   }
 }
