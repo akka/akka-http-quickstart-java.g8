@@ -20,6 +20,12 @@ public class UserRegistryActor extends AbstractActor {
     private final int age;
     private final String countryOfResidence;
 
+    public User() {
+      this.name = "";
+      this.countryOfResidence = "";
+      this.age = 1;
+    }
+
     public User(String name, int age, String countryOfResidence) {
       this.name = name;
       this.age = age;
@@ -42,6 +48,10 @@ public class UserRegistryActor extends AbstractActor {
   public static class Users{
     private final List<User> users;
 
+    public Users() {
+      this.users = new ArrayList<>();
+    }
+
     public Users(List<User> users) {
       this.users = users;
     }
@@ -51,10 +61,10 @@ public class UserRegistryActor extends AbstractActor {
     }
   }
 //#user-case-classes
-
+  
 
   static Props props() {
-    return Props.create(UserRegistryActor.class, new UserRegistryActor());
+    return Props.create(UserRegistryActor.class);
   }
 
   private final List<User> users =new ArrayList<>();

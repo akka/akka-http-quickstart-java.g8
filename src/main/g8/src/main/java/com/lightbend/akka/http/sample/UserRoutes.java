@@ -11,6 +11,9 @@ import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import com.lightbend.akka.http.sample.UserRegistryActor.User;
+import com.lightbend.akka.http.sample.UserRegistryMessages.ActionPerformed;
+import com.lightbend.akka.http.sample.UserRegistryMessages.CreateUser;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
@@ -58,10 +61,10 @@ public class UserRoutes extends AllDirectives {
                                                 }
                                         ),
                                         post(() ->
-                                                entity(Jackson.unmarshaller(UserRegistryActor.User.class), user -> {
-                                                    Future<UserRegistryMessages.ActionPerformed> userCreated =
-                                                            Patterns.ask(userRegistryActor, new UserRegistryMessages.CreateUser(user), timeout)
-                                                                    .mapTo(classTag(UserRegistryMessages.ActionPerformed.class));
+                                                entity(Jackson.unmarshaller(User.class), user -> {
+                                                    Future<ActionPerformed> userCreated =
+                                                            Patterns.ask(userRegistryActor, new CreateUser(user), timeout)
+                                                                    .mapTo(classTag(ActionPerformed.class));
                                                     return onSuccess(() -> toJava(userCreated),
                                                             performed -> {
                                                                 log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
@@ -81,13 +84,13 @@ public class UserRoutes extends AllDirectives {
 
                                                     return rejectEmptyResponse(() ->
                                                             onSuccess(() -> toJava(maybeUser),
-                                                            performed  -> complete(StatusCodes.OK, (UserRegistryActor.User)performed.get(), Jackson.<UserRegistryActor.User>marshaller())));
+                                                            performed  -> complete(StatusCodes.OK, (User)performed.get(), Jackson.<User>marshaller())));
                                                     //#retrieve-user-info
                                                 }),
                                                 delete(() -> {
                                                     //#users-delete-logic
-                                                    Future<UserRegistryMessages.ActionPerformed> userDeleted =
-                                                            Patterns.ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout).mapTo(classTag(UserRegistryMessages.ActionPerformed.class));
+                                                    Future<ActionPerformed> userDeleted =
+                                                            Patterns.ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout).mapTo(classTag(ActionPerformed.class));
 
                                                     return onSuccess(() -> toJava(userDeleted),
                                                             performed -> {
