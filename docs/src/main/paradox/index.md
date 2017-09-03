@@ -11,7 +11,7 @@ This guide highlights Akka HTTP fundamentals in the context of a simple user reg
 
 * Download the quickstart project and run the app.
 * Follow this guide to explore the code.
-* Integrate the project into IntelliJ. If you prefer a different IDE, the principles should be similar, as long as it supports Scala.
+* Integrate the project into IntelliJ. If you prefer a different IDE, the principles should be similar, as long as it supports Java.
 
 ## Prerequisite
 
@@ -175,10 +175,10 @@ Congratulations, you just ran and exercised your first Akka HTTP app! You got a 
 
 The example is implemented in the following three source files:
 
-* `QuickstartServer.scala` -- contains the main class which sets-up and all actors, it runs the Akka HTTP `routes`.
-* `UserRoutes.scala` -- contains Akka HTTP `routes` that the Server will serve.
-* `UserRegistryActor.scala` -- implements the actor that handles registration.
-* `JsonSupport.scala` -- converts the JSON data from requests into Scala types and from Scala types into JSON responses.
+* `QuickstartServer.java` -- contains the main class which sets-up and all actors, it runs the Akka HTTP `routes`.
+* `UserRoutes.java` -- contains Akka HTTP `routes` that the Server will serve.
+* `UserRegistryActor.java` -- implements the actor that handles registration.
+* `UserRegistryMessages.java` -- wth UserRegistryActor specific messages.
 
 First, let's dissect the backend logic.
 

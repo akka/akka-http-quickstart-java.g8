@@ -19,7 +19,6 @@ import java.util.concurrent.CompletionStage;
 public class QuickstartServer extends AllDirectives {
 
     // set up ActorSystem and other dependencies here
-    //#main-class
     private final UserRoutes userRoutes;
 
     public QuickstartServer(ActorSystem system, ActorRef userRegistryActor) {
@@ -53,9 +52,9 @@ public class QuickstartServer extends AllDirectives {
                 .thenCompose(ServerBinding::unbind) // trigger unbinding from the port
                 .thenAccept(unbound -> system.terminate()); // and shutdown when done
         //#http-server
-        //#main-class
     }
 
+    //#main-class
     /**
      * Here you can define all the different routes you want to have served by this web server
      * Note that routes might be defined in separated classes like the current case

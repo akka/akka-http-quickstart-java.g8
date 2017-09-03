@@ -16,7 +16,7 @@ import akka.http.javadsl.model.StatusCodes;
 
 
 //#set-up
-public class HttpServerHttpAppTest extends JUnitRouteTest {
+public class UserRoutesTest extends JUnitRouteTest {
     //#test-top
     private TestRoute appRoute;
 
