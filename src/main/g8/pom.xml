@@ -51,12 +51,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-classpath</argument>
-                        <classpath />
-                        <argument>com.lightbend.akka.http.sample.QuickstartServer</argument>
-                    </arguments>
+                    <mainClass>com.lightbend.akka.http.sample.QuickstartServer</mainClass>
                 </configuration>
             </plugin>
         </plugins>
