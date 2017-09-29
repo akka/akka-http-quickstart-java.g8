@@ -17,7 +17,7 @@ Data transfer classes that we are using to interact with actors does not have an
 
 @@snip [UserRegistryActor.java]($g8src$/java/com/lightbend/akka/http/sample/UserRegistryActor.java) { #user-case-classes }
 
-@@@ note
+@@@
   
     While we used Jackson JSON in this example, various other libraries can be used
     Each library comes with different trade-offs in performance and user-friendlieness. 
@@ -25,5 +25,5 @@ Data transfer classes that we are using to interact with actors does not have an
   
 @@@ 
 
-Now that we've examined the example app thoroughly, let's test a few the remaining use cases.
+Now that we've examined the example app thoroughly, let's test a few remaining use cases.
 

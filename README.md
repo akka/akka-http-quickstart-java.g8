@@ -17,24 +17,16 @@ This template will prompt for the following parameters. Press `Enter` if the def
 
 This template comes with example for an Akka HTTP server on Java `QuickstartServer`, along with their respective tests.
 
-Once inside the project folder, to run this code, you can use any of the following commands:
+Once inside the project folder, to run this code, you can following command to run server:
 ```
 sbt run
 ```
-This will prompt you with the 2 different servers, so you can pick the one you prefer.
-
-Alternatively, you can run:
-
-```
-sbt runMain com.lightbend.akka.http.sample.QuickstartServer
-```
-
-to directly run the specified file.
 
 This template also provides build descriptors for maven and gradle. You can use any of the following commands to run 
 the application:
 ```
-mvn exec:exec
+mvn compile
+mvn exec:java
 ```
 or
 ```
