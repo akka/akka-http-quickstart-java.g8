@@ -11,16 +11,11 @@ sbt -Dsbt.version=0.13.15 new https://github.com/akka/akka-http-java-seed.g8
 
 This template will prompt for the following parameters. Press `Enter` if the default values suit you:
 - `name`: Becomes the name of the project.
-- `description`: Provides a description for the project.
+- `organisation`: Provides an organisation name for the project.
 - `akka-http-version`: Specifies which version of Akka HTTP should be used for this project.
 - `akka-version`: Specifies which version of Akka should be used for this project.
 
-This template comes with 2 different ways to implement an Akka HTTP server, along with their respective tests.
-
-- HttpServer: This is the manual way to start a server. For this case, routes are defined in separated classes: `com.example.routes.BaseRoutes` 
-and `com.example.routes.SimpleRoutes`.
-- HttpServerHttpApp: This server is started using the recently introduce `HttpApp`, which bootstraps a server with just a few lines.
-For this particular case, the routes are defined in the same class, but you can also define them in different ones.
+This template comes with example for an Akka HTTP server on Java `QuickstartServer`, along with their respective tests.
 
 Once inside the project folder, to run this code, you can use any of the following commands:
 ```
@@ -31,12 +26,9 @@ This will prompt you with the 2 different servers, so you can pick the one you p
 Alternatively, you can run:
 
 ```
-sbt runMain com.example.HttpServer
+sbt runMain com.lightbend.akka.http.sample.QuickstartServer
 ```
-or
-```
-sbt runMain com.example.HttpServerHttpApp
-```
+
 to directly run the specified file.
 
 This template also provides build descriptors for maven and gradle. You can use any of the following commands to run 
@@ -48,7 +40,7 @@ or
 ```
 gradle run
 ```
-Both commands run `com.example.HttpServer` by default.
+Both commands run `com.lightbend.akka.http.sample.QuickstartServer` by default.
 
 
 Template license
