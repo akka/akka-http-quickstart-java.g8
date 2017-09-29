@@ -7,9 +7,6 @@ import akka.japi.Creator;
 
 import java.util.*;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
-
-
 public class UserRegistryActor extends AbstractActor {
 
   LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);

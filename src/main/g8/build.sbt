@@ -4,13 +4,13 @@ lazy val akkaVersion    = "$akka_version$"
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
-      organization := "com.example",
-      scalaVersion := "2.12.3"
+      organization := "$organization$",
+      scalaVersion := "2.12.3",
+      name := "$name$"
     )),
     name := "TestProject",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
       "com.typesafe.akka" %% "akka-http-jackson"    % akkaHttpVersion,
 
