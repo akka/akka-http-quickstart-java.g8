@@ -1,12 +1,12 @@
 Running the application
 -----------------------
 
-When you ran the example for the first time, you were able to create and retrieve multiple users.
+When you run the example for the first time, you were able to create and retrieve multiple users.
  Now that you understand how the example is implemented, let's confirm that the rest of the
  functionality works. We want to verify that:
 
 * If we try to retrieve users when none exist, we get an empty list.
-* If we try to retrieve a specific user that doesn't exist, we get an informative message.
+* If we try to retrieve a particular user that doesn't exist, we get an informative message.
 * We can delete users.
 
 To test this functionality, follow these steps. If you need reminders on starting the app
@@ -18,8 +18,7 @@ To test this functionality, follow these steps. If you need reminders on startin
 
 You should get back an empty list: `{"users":[]}`
 
-`4.` Try to retrieve a single user named `MrX`. Hint: use the `GET` method and append
-`users/MrX` to the URL.
+`4.` Try to retrieve a single user named `MrX`. Hint: use the `GET` method and append `users/MrX` to the URL.
 
 You should get back the message: `User MrX is not registered.`
 

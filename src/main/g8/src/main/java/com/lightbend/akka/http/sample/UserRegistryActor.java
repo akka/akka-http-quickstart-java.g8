@@ -76,16 +76,16 @@ public class UserRegistryActor extends AbstractActor {
             .match(UserRegistryMessages.CreateUser.class, createUser -> {
               users.add(createUser.getUser());
               getSender().tell(new UserRegistryMessages.ActionPerformed(
-                      String.format("User %s created.",createUser.getUser().getName())),getSelf());
+                      String.format("User %s created.", createUser.getUser().getName())),getSelf());
             })
             .match(UserRegistryMessages.GetUser.class, getUser -> {
               getSender().tell(users.stream()
                       .filter(user -> user.getName().equals(getUser.getName()))
-                      .findFirst(),getSelf());
+                      .findFirst(), getSelf());
             })
             .match(UserRegistryMessages.DeleteUser.class, deleteUser -> {
               users.removeIf(user -> user.getName().equals(deleteUser.getName()));
-              getSender().tell(new UserRegistryMessages.ActionPerformed(String.format("User %s deleted.",deleteUser.getName())),
+              getSender().tell(new UserRegistryMessages.ActionPerformed(String.format("User %s deleted.", deleteUser.getName())),
                       getSelf());
 
             }).matchAny(o -> log.info("received unknown message"))

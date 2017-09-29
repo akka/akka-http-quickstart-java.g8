@@ -1,8 +1,7 @@
 HTTP Server logic
 -----------------
 
-The main class, `QuickstartServer`, is runnable because it extends `App`, as shown in the following snippet. 
-This class is intended to "bring it all together", it is the main class that will run the application, as well 
+Class `QuickstartServer` is intended to "bring it all together", it is the main class that will run the application, as well 
 as the class that should bootstrap all actors and other dependencies (database connections etc). 
 
 @@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/QuickstartServer.java) { #main-class }
@@ -14,7 +13,7 @@ compartmentalizing them into groups of routes handling specific parts of the exp
 
 ## Binding endpoints
 
-Each Akka HTTP `Route` contains one or more `akka.http.javadsl.server.Directives`, such as:
+Each Akka HTTP `Route` contains one or more `akka.http.javadsl.server.AllDirectives`, such as:
 `path`, `get`, `post`, `complete`, etc. There is also a [low-level API]
 (http://doc.akka.io/docs/akka-http/current/java/http/low-level-server-side-api.html) that allows
 to inspect requests and create responses manually. For the user registry service, the example needs
@@ -31,8 +30,8 @@ In the `QuickstartServer` source file, the definition of the `Route` delegates t
 `lazy val routes: Route = userRoutes`.
 
 In larger applications this is where we'd combine the various routes of our application into a big route that is concatenating
-the various routes of our services. We'd do this using the concat directive like this:
-`Route route = route(userRoutes, healthCheckRoutes, ...)`
+the various routes of our services. We'd do this using directive like this:
+` protected Route createRoute() {return userRoutes.routes();} `
 
 Let's look at the pieces of the example `Route` that bind the endpoints, HTTP methods, and message or payload
 for each action.
@@ -43,16 +42,20 @@ The definition of the endpoint to retrieve and create users look like the follow
 
 @@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #users-get-post }
 
-A Route is constructed by nesting various *directives* which route an incoming request to the apropriate handler block.
-Note the following building blocks from the snippet:
+A Route is constructed by nesting various *directives* which route an incoming request to the appropriate handler block.
 
 **Generic functionality**
 
 The following directives are used in the above example:
 
 * `pathPrefix("users")` : the path that is used to match the incoming request against.
-* `pathEnd` : used on an inner-level to discriminate “path already fully matched” from other alternatives. Will, in this case, match on the "users" path.
-* `route`: concatenates two or more route alternatives. Routes are attempted one after another. If a route rejects a request, the next route in the chain is attempted. This continues until a route in the chain produces a response. If all route alternatives reject the request, the concatenated route rejects the route as well. In that case, route alternatives on the next higher level are attempted. If the root level route rejects the request as well, then an error response is returned that contains information about why the request was rejected.
+* `pathEnd` : used on an inner-level to discriminate “path already fully matched” from other alternatives. Will, in this 
+case, match on the "users" path.
+* `route`: concatenates two or more route alternatives. Routes are attempted one after another. If a route rejects a request,
+the next route in the chain is attempted. This continues until a route in the chain produces a response. If all route
+alternatives reject the request, the concatenated route rejects the route as well. In that case, route alternatives on
+the next higher level are attempted. If the root level route rejects the request as well, then an error response is
+returned that contains information about why the request was rejected.
 
 **Retrieving users**
 
@@ -62,29 +65,33 @@ The following directives are used in the above example:
 **Creating a user**
 
 * `post` : matches against `POST` HTTP method.
-* `entity(...)` : converts the HTTP request body into a domain object of type User. Implicitly, we assume that the request contains application/json content. We will look at how this works in the @ref:[JSON](json.md) section.
-* `complete` : completes a request which means creating and returning a response from the arguments. Note, how the tuple `(StatusCodes.CREATED, "...")` of type `(StatusCode, String)` is implicitly converted to a response with the given status code and a text/plain body with the given string.
+* `entity(...)` : converts the HTTP request body into a domain object of type User. Implicitly, we assume that
+the request contains application/json content. We will look at how this works in the @ref:[JSON](json.md) section.
+* `complete` : completes a request which means creating and returning a response from the arguments. Note, that call 
+returns a response with the given status code and a text/plain body with the given string along with explicit
+marshaller as last parameter.
 
 ### Retrieving and removing a user
 
-Next, the example defines how to retrieve and remove a user. In this case, the URI must include the user's id in the form: `/users/$ID`. See if you can identify the code that handles that in the following snippet. This part of the route includes logic for both the GET and the DELETE methods.
+Next, the example defines how to retrieve and remove a user. In this case, the URI must include the user's id in
+the form: `/users/$ID`. See if you can identify the code that handles that in the following snippet. This part of the route
+includes logic for both the GET and the DELETE methods.
 
 @@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #users-get-delete }
-
-This part of the `Route` contains the following:
 
 **Generic functionality**
 
 The following directives are used in the above example:
 
 * `pathPrefix("users")` : the path that is used to match the incoming request against.
-* `concat`: concatenates two or more route alternatives. Routes are attempted one after another. If a route rejects a
+* `route`: concatenates two or more route alternatives. Routes are attempted one after another. If a route rejects a
 request, the next route in the chain is attempted. This continues until a route in the chain produces a response.
-* `path(Segment) { => user` : this bit of code matches against URIs of the exact format `/users/$ID` and the
-`Segment` is automatically extracted into the `user` variable so that we can get to the value passed in the URI.
-For example `/users/Bruce` will populate the `user` variable with the value "Bruce." There is plenty of more features
+* `path(PathMatchers.segment(), name ->` : this bit of code matches against URIs of the exact format `/users/$ID` and the
+`Segment` is automatically extracted into the `name` variable so that we can get to the value passed in the URI.
+For example `/users/Bruce` will populate the `name` variable with the value "Bruce." There is plenty of more features
 available for handling of URIs, see
-[pattern matchers](http://doc.akka.io/docs/akka-http/current/java/http/routing-dsl/path-matchers.html#basic-pathmatchers) for more information.
+[pattern matchers](http://doc.akka.io/docs/akka-http/current/java/http/routing-dsl/path-matchers.html#basic-pathmatchers)
+for more information.
 
 **Retrieving a user**
 
@@ -95,8 +102,8 @@ Let's break down the logic handling the incoming request:
 
 @@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #retrieve-user-info }
 
-The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a future, handles an `Option`
-by converting `Some` into a successful response, returns a HTTP status code 404 for `None`, and passes on to the
+The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a future, handles an `Optional`
+by converting value into a successful response, returns a HTTP status code 404 if value is not present, and passes on to the
 `ExceptionHandler` in case of an error, which returns the HTTP status code 500 by default.
 
 **Deleting a user**
@@ -117,8 +124,8 @@ Below is the complete `Route` definition from the sample application:
 
 @@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #all-routes }
 
-Note that one might want to separate those routes into smaller route values and `concat` them together into the `userRoutes`
-value - in a similar fashion like we do in the `QuickstartServer` leading to a bit less "dense" code.
+Note that one might want to separate those routes into smaller route values and concatenate them them together with 
+`route` into the `userRoutes` value - in a similar fashion like we do in the `QuickstartServer` leading to a bit less "dense" code.
 
 ## Binding the HTTP server
 
@@ -129,7 +136,7 @@ At the beginning of the `main` class, the example defines some implicit values t
 Akka Streams uses these values:
 
 * `ActorSystem` : provides a context in which actors will run. What actors, you may wonder? Akka Streams uses actors
- under the hood, and the actor system defined in this `val` will be picked up and used by Streams.
+ under the hood, and the actor will be picked up and used by Streams.
 * `ActorMaterializer` : while the ActorSystem is the host of all thread pools and live actors, an ActorMaterializer
 is specific to Akka Streams and is what makes them run. The ActorMaterializer interprets stream descriptions into
 executable entities which are run on actors, and this is why it requires an ActorSystem to function.
@@ -138,9 +145,14 @@ Further down in `QuickstartServer.java`, you will find the code to instantiate t
 
 @@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/QuickstartServer.java) { #http-server }
 
-The `bindAndhandle` method only takes three parameters; `routes`, the hostname, and the port. That's it! When this program runs--as you've seen--it starts an Akka HTTP server on localhost port 8080. Note that startup happens asynchronously and therefore the `bindAndHandle` method returns a `Future`.
+The `bindAndHandle` method only takes three parameters; `routes`, the hostname with the port and materializer. 
+That's it! When this program runs, it starts an Akka HTTP server on localhost port 8080. Note that startup happens
+asynchronously and therefore the `bindAndHandle` method returns a `CompletionStage`.
 
-The code for stopping the server includes the `StdIn.readLine()` method that will wait until RETURN is pressed on the keyboard. When that happens, `flatMap` uses the `Future` returned when we started the server to get to the `unbind()` method. Unbinding is also an asynchronous function. When the `Future` returned by `unbind()` completes, the example code makes sure that the actor system is properly terminated.
+The code for stopping the server includes the `System.in.read()` method that will wait until RETURN is pressed on
+the keyboard. When that happens, `thenCompose` uses the `CompletionStage` returned when we started the server to get 
+to the `unbind()` method. Unbinding is also an asynchronous function. When the `CompletionStage` returned by `unbind()`
+ completes, the example code makes sure that the actor system is properly terminated.
 
 ## The complete server code
 

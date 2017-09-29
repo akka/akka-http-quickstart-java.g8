@@ -20,7 +20,7 @@ public class UserRoutesTest extends JUnitRouteTest {
     //#test-top
     private TestRoute appRoute;
 
-    //#set-up
+
     @Before
     public void initClass() {
         ActorSystem system = ActorSystem.create("helloAkkaHttpServer");
@@ -28,7 +28,7 @@ public class UserRoutesTest extends JUnitRouteTest {
         QuickstartServer server = new QuickstartServer(system, userRegistryActor);
         appRoute = testRoute(server.createRoute());
     }
-
+    //#set-up
     //#actual-test
     @Test
     public void testNoUsers() {

@@ -27,10 +27,10 @@ public class QuickstartServer extends AllDirectives {
     //#main-class
 
     public static void main(String[] args) throws Exception {
+        //#server-bootstrapping
         // boot up server using the route as defined below
         ActorSystem system = ActorSystem.create("helloAkkaHttpServer");
 
-        //#server-bootstrapping
         final Http http = Http.get(system);
         final ActorMaterializer materializer = ActorMaterializer.create(system);
         //#server-bootstrapping

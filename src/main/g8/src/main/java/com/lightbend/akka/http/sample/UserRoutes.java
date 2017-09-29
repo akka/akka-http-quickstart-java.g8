@@ -87,8 +87,9 @@ public class UserRoutes extends AllDirectives {
                                                             performed  -> complete(StatusCodes.OK, (User)performed.get(), Jackson.<User>marshaller())));
                                                     //#retrieve-user-info
                                                 }),
+                                                //#users-delete-logic
                                                 delete(() -> {
-                                                    //#users-delete-logic
+
                                                     Future<ActionPerformed> userDeleted =
                                                             Patterns.ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout).mapTo(classTag(ActionPerformed.class));
 
@@ -97,12 +98,13 @@ public class UserRoutes extends AllDirectives {
                                                                 log.info("Deleted user [{}]: {}", name, performed.getDescription());
                                                                 return complete(StatusCodes.OK, performed, Jackson.marshaller());
                                                             }
-                                                            //#users-delete-logic
+
                                                     );
                                                 })
+                                                //#users-delete-logic
                                         )
                         ))));
         //#users-get-delete
-        //#all-routes
     }
+    //#all-routes
 }
