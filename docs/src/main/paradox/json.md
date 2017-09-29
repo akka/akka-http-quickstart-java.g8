@@ -17,11 +17,11 @@ Data transfer classes that we are using to interact with actors does not have an
 
 @@snip [UserRegistryActor.java]($g8src$/java/com/lightbend/akka/http/sample/UserRegistryActor.java) { #user-case-classes }
 
-@@@
+@@@ note
   
-    While we used Jackson JSON in this example, various other libraries can be used
-    Each library comes with different trade-offs in performance and user-friendlieness. 
-    Still Jakson is the default Java marshaller
+While we used Jackson JSON in this example, various other libraries can be used
+Each library comes with different trade-offs in performance and user-friendlieness. 
+Still Jakson is the default Java marshaller
   
 @@@ 
 
