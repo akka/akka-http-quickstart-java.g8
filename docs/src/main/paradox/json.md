@@ -2,7 +2,7 @@ JSON marshalling
 ----------------
 
 When exercising the app, you interacted with JSON payloads. How does the example app convert data between JSON format
-and data that can be used by Scala classes? Fur this purposes akka.http has `akka.http.javadsl.marshallers.jackson.Jackson`
+and data that can be used by Java classes? Fur this purposes akka.http has `akka.http.javadsl.marshallers.jackson.Jackson`
 
 We're using the [Jackson](https://github.com/FasterXML/jackson) library here, along with akka-http wrapper that provides
 marshallers  `Jackson.marshaller()`. It does ot provide type safety like `Spray` on compile time
