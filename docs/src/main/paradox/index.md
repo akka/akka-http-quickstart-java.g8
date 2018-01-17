@@ -40,7 +40,7 @@ You can run the Akka HTTP example project on Linux, MacOS, or Windows. The only 
 The Akka HTTP example for Java is a zipped project that includes a distribution of the
  [sbt](http://www.scala-sbt.org) build tool, as well as gradle and maven. Download and unzip the example as follows:
 
-1. Download the project as a compressed file from Lightbend Tech Hub by clicking `CREATE A PROJECT FOR ME`.
+1. Download the project as a compressed file from [Lightbend Tech Hub](https://developer.lightbend.com/start/?group=akka&project=akka-http-quickstart-java) by clicking `CREATE A PROJECT FOR ME`.
 2. Extract the zip file to a convenient location:
 
 * On Linux and MacOS systems, open a terminal and use the command `unzip` akka-quickstart-java.zip. Note: On OSX,
