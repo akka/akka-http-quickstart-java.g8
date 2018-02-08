@@ -48,35 +48,37 @@ public class UserRoutes extends AllDirectives {
     public Route routes() {
         return route(pathPrefix("users", () ->
             route(
-                usersGetPost(),
-                usersGetDelete()
+                userCollectionRoutes(),
+                singleUserRoutes()
             )
         ));
     }
     //#all-routes
 
     //#users-get-delete
-    private Route usersGetDelete() {
+    private Route singleUserRoutes() {
         return path(PathMatchers.segment(),
             name -> route(
                 get(() -> {
                     //#retrieve-user-info
-                    Future<Optional> maybeUser =
-                        Patterns
-                            .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
-                            .mapTo(classTag(Optional.class));
+                    Future<Optional> maybeUser = Patterns
+                        .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
+                        .mapTo(classTag(Optional.class));
 
                     return rejectEmptyResponse(() ->
-                        onSuccess(() -> toJava(maybeUser),
-                            performed -> complete(StatusCodes.OK, (User) performed.get(), Jackson.<User>marshaller())));
+                        onSuccess(
+                            () -> toJava(maybeUser),
+                            performed ->
+                                complete(StatusCodes.OK, (User) performed.get(), Jackson.<User>marshaller())
+                        )
+                    );
                     //#retrieve-user-info
                 }),
                 //#users-delete-logic
                 delete(() -> {
-                    Future<ActionPerformed> userDeleted =
-                        Patterns
-                            .ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout)
-                            .mapTo(classTag(ActionPerformed.class));
+                    Future<ActionPerformed> userDeleted = Patterns
+                        .ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout)
+                        .mapTo(classTag(ActionPerformed.class));
 
                     return onSuccess(() -> toJava(userDeleted),
                         performed -> {
@@ -92,32 +94,32 @@ public class UserRoutes extends AllDirectives {
     //#users-get-delete
 
     //#users-get-post
-    private Route usersGetPost() {
+    private Route userCollectionRoutes() {
         return pathEnd(() ->
             route(
                 get(() -> {
-                    Future<UserRegistryActor.Users> futureUsers =
-                        Patterns
-                            .ask(userRegistryActor, new UserRegistryMessages.GetUsers(), timeout)
-                            .mapTo(classTag(UserRegistryActor.Users.class));
+                    Future<UserRegistryActor.Users> futureUsers = Patterns
+                        .ask(userRegistryActor, new UserRegistryMessages.GetUsers(), timeout)
+                        .mapTo(classTag(UserRegistryActor.Users.class));
                     return onSuccess(() -> toJava(futureUsers),
                         users -> complete(StatusCodes.OK, users, Jackson.marshaller()));
-                    }
-                ),
+                }),
                 post(() ->
-                    entity(Jackson.unmarshaller(User.class), user -> {
-                    Future<ActionPerformed> userCreated =
-                        Patterns
-                            .ask(userRegistryActor, new CreateUser(user), timeout)
-                            .mapTo(classTag(ActionPerformed.class));
-                    return onSuccess(() -> toJava(userCreated),
-                        performed -> {
-                            log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
-                            return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
-                        });
-                    }))
+                    entity(
+                        Jackson.unmarshaller(User.class),
+                        user -> {
+                            Future<ActionPerformed> userCreated = Patterns
+                                .ask(userRegistryActor, new CreateUser(user), timeout)
+                                .mapTo(classTag(ActionPerformed.class));
+                            return onSuccess(() -> toJava(userCreated),
+                                performed -> {
+                                    log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
+                                    return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
+                                });
+                        }))
             )
         );
     }
+
     //#users-get-post
 }

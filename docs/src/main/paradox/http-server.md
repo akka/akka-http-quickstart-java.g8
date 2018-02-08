@@ -22,12 +22,9 @@ to support the actions listed below. For each, we can identify a path, the HTTP 
 | Functionality      | HTTP Method | Path       | Returns              |
 |--------------------|-------------|------------|----------------------|
 | Create a user      | POST        | /users     | Confirmation message |
+| Retrieve all users | GET         | /users     | JSON payload         |
 | Retrieve a user    | GET         | /users/$ID | JSON payload         |
 | Remove a user      | DELETE      | /users/$ID | Confirmation message |
-| Retrieve all users | GET         | /users     | JSON payload         |
-
-In the `QuickstartServer` source file, the definition of the `Route` delegates to the routes defined in `UserRoutes`:
-`lazy val routes: Route = userRoutes`.
 
 In larger applications this is where we'd combine the various routes of our application into a big route that is concatenating
 the various routes of our services. We'd do this using directive like this:
