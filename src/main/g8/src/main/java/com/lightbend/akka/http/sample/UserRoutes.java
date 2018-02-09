@@ -9,7 +9,7 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
-import akka.pattern.Patterns;
+import akka.pattern.PatternsCS;
 import akka.util.Timeout;
 import com.lightbend.akka.http.sample.UserRegistryActor.User;
 import com.lightbend.akka.http.sample.UserRegistryMessages.ActionPerformed;
@@ -18,6 +18,7 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
 import static akka.japi.Util.classTag;
@@ -61,26 +62,26 @@ public class UserRoutes extends AllDirectives {
             name -> route(
                 get(() -> {
                     //#retrieve-user-info
-                    Future<Optional> maybeUser = Patterns
+                    CompletionStage<Optional<User>> maybeUser = PatternsCS
                         .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
-                        .mapTo(classTag(Optional.class));
+                        .thenApply(obj -> (Optional<User>) obj);
 
                     return rejectEmptyResponse(() ->
                         onSuccess(
-                            () -> toJava(maybeUser),
+                            () -> maybeUser,
                             performed ->
-                                complete(StatusCodes.OK, (User) performed.get(), Jackson.<User>marshaller())
+                                complete(StatusCodes.OK, performed.get(), Jackson.<User>marshaller())
                         )
                     );
                     //#retrieve-user-info
                 }),
                 //#users-delete-logic
                 delete(() -> {
-                    Future<ActionPerformed> userDeleted = Patterns
+                    CompletionStage<ActionPerformed> userDeleted = PatternsCS
                         .ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout)
-                        .mapTo(classTag(ActionPerformed.class));
+                        .thenApply(obj -> (ActionPerformed) obj);
 
-                    return onSuccess(() -> toJava(userDeleted),
+                    return onSuccess(() -> userDeleted,
                         performed -> {
                             log.info("Deleted user [{}]: {}", name, performed.getDescription());
                             return complete(StatusCodes.OK, performed, Jackson.marshaller());
@@ -98,20 +99,20 @@ public class UserRoutes extends AllDirectives {
         return pathEnd(() ->
             route(
                 get(() -> {
-                    Future<UserRegistryActor.Users> futureUsers = Patterns
+                    CompletionStage<UserRegistryActor.Users> futureUsers = PatternsCS
                         .ask(userRegistryActor, new UserRegistryMessages.GetUsers(), timeout)
-                        .mapTo(classTag(UserRegistryActor.Users.class));
-                    return onSuccess(() -> toJava(futureUsers),
+                        .thenApply(obj ->(UserRegistryActor.Users) obj);
+                    return onSuccess(() -> futureUsers,
                         users -> complete(StatusCodes.OK, users, Jackson.marshaller()));
                 }),
                 post(() ->
                     entity(
                         Jackson.unmarshaller(User.class),
                         user -> {
-                            Future<ActionPerformed> userCreated = Patterns
+                            CompletionStage<ActionPerformed> userCreated = PatternsCS
                                 .ask(userRegistryActor, new CreateUser(user), timeout)
-                                .mapTo(classTag(ActionPerformed.class));
-                            return onSuccess(() -> toJava(userCreated),
+                                .thenApply(obj ->(ActionPerformed) obj);
+                            return onSuccess(() -> userCreated,
                                 performed -> {
                                     log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
                                     return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
