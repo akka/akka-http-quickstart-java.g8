@@ -42,6 +42,7 @@ public class UserRoutes extends AllDirectives {
      * This method creates one route (of possibly many more that will be part of your Web App)
      */
     //#all-routes
+    //#users-get-delete
     public Route routes() {
         return route(pathPrefix("users", () ->
             route(
@@ -55,6 +56,8 @@ public class UserRoutes extends AllDirectives {
         ));
     }
     //#all-routes
+
+    //#users-get-delete
 
     //#users-get-delete
     private Route getUser(String name) {
