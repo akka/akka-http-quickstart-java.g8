@@ -14,15 +14,11 @@ import akka.util.Timeout;
 import com.lightbend.akka.http.sample.UserRegistryActor.User;
 import com.lightbend.akka.http.sample.UserRegistryMessages.ActionPerformed;
 import com.lightbend.akka.http.sample.UserRegistryMessages.CreateUser;
-import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
-
-import static akka.japi.Util.classTag;
-import static scala.compat.java8.FutureConverters.toJava;
 
 /**
  * Routes can be defined in separated classes like shown in here
@@ -49,53 +45,57 @@ public class UserRoutes extends AllDirectives {
     public Route routes() {
         return route(pathPrefix("users", () ->
             route(
-                userCollectionRoutes(),
-                singleUserRoutes()
+                getOrPostUsers(),
+                path(PathMatchers.segment(), name -> route(
+                    getUser(name),
+                    deleteUser(name)
+                  )
+                )
             )
         ));
     }
     //#all-routes
 
     //#users-get-delete
-    private Route singleUserRoutes() {
-        return path(PathMatchers.segment(),
-            name -> route(
-                get(() -> {
-                    //#retrieve-user-info
-                    CompletionStage<Optional<User>> maybeUser = PatternsCS
-                        .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
-                        .thenApply(obj -> (Optional<User>) obj);
+    private Route getUser(String name) {
+      return get(() -> {
+          //#retrieve-user-info
+          CompletionStage<Optional<User>> maybeUser = PatternsCS
+            .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
+            .thenApply(obj ->(Optional<User>) obj);
 
-                    return rejectEmptyResponse(() ->
-                        onSuccess(
-                            () -> maybeUser,
-                            performed ->
-                                complete(StatusCodes.OK, performed.get(), Jackson.<User>marshaller())
-                        )
-                    );
-                    //#retrieve-user-info
-                }),
-                //#users-delete-logic
-                delete(() -> {
-                    CompletionStage<ActionPerformed> userDeleted = PatternsCS
-                        .ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout)
-                        .thenApply(obj -> (ActionPerformed) obj);
-
-                    return onSuccess(() -> userDeleted,
-                        performed -> {
-                            log.info("Deleted user [{}]: {}", name, performed.getDescription());
-                            return complete(StatusCodes.OK, performed, Jackson.marshaller());
-                        }
-                    );
-                })
-                //#users-delete-logic
+          return rejectEmptyResponse(() ->
+            onSuccess(
+              () -> maybeUser,
+              performed ->
+                complete(StatusCodes.OK, (User) performed.get(), Jackson.<User>marshaller())
             )
-        );
+          );
+          //#retrieve-user-info
+        });
+    }
+
+    private Route deleteUser(String name) {
+      return
+          //#users-delete-logic
+          delete(() -> {
+            CompletionStage<ActionPerformed> userDeleted = PatternsCS
+              .ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout)
+              .thenApply(obj ->(ActionPerformed)obj);
+
+            return onSuccess(() -> userDeleted,
+              performed -> {
+                log.info("Deleted user [{}]: {}", name, performed.getDescription());
+                return complete(StatusCodes.OK, performed, Jackson.marshaller());
+              }
+            );
+          });
+          //#users-delete-logic
     }
     //#users-get-delete
 
     //#users-get-post
-    private Route userCollectionRoutes() {
+    private Route getOrPostUsers() {
         return pathEnd(() ->
             route(
                 get(() -> {
