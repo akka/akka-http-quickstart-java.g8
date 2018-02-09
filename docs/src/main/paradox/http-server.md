@@ -99,7 +99,7 @@ Let's break down the logic handling the incoming request:
 
 @@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #retrieve-user-info }
 
-The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a future, handles an `Optional`
+The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a `CompletionStage`, handles an `Optional`
 by converting value into a successful response, returns a HTTP status code 404 if value is not present, and passes on to the
 `ExceptionHandler` in case of an error, which returns the HTTP status code 500 by default.
 
