@@ -22,27 +22,25 @@ to support the actions listed below. For each, we can identify a path, the HTTP 
 | Functionality      | HTTP Method | Path       | Returns              |
 |--------------------|-------------|------------|----------------------|
 | Create a user      | POST        | /users     | Confirmation message |
+| Retrieve all users | GET         | /users     | JSON payload         |
 | Retrieve a user    | GET         | /users/$ID | JSON payload         |
 | Remove a user      | DELETE      | /users/$ID | Confirmation message |
-| Retrieve all users | GET         | /users     | JSON payload         |
 
-In the `QuickstartServer` source file, the definition of the `Route` delegates to the routes defined in `UserRoutes`:
-`lazy val routes: Route = userRoutes`.
+### The top-level Route
 
-In larger applications this is where we'd combine the various routes of our application into a big route that is concatenating
-the various routes of our services. We'd do this using directive like this:
-` protected Route createRoute() {return userRoutes.routes();} `
+A Route is constructed by nesting various *directives* which route an incoming request to the appropriate handler block.
 
-Let's look at the pieces of the example `Route` that bind the endpoints, HTTP methods, and message or payload
-for each action.
+Below is the top-level `Route` definition that gives a high-level structure to the routes but delegates the specifics to individual functions:
+
+@@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #all-routes }
+
+We will look at how these are built up in more detail in the next couple of sections.
 
 ### Retrieving and creating users
 
 The definition of the endpoint to retrieve and create users look like the following:
 
 @@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #users-get-post }
-
-A Route is constructed by nesting various *directives* which route an incoming request to the appropriate handler block.
 
 **Generic functionality**
 
@@ -102,7 +100,7 @@ Let's break down the logic handling the incoming request:
 
 @@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #retrieve-user-info }
 
-The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a future, handles an `Optional`
+The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a `CompletionStage`, handles an `Optional`
 by converting value into a successful response, returns a HTTP status code 404 if value is not present, and passes on to the
 `ExceptionHandler` in case of an error, which returns the HTTP status code 500 by default.
 
@@ -117,15 +115,6 @@ The logic for handling delete requests is as follows:
 So we send an instruction about removing a user to the user registry actor, wait for the response and return an
 appropriate HTTP status code to the client.
 
-
-## The complete Route
-
-Below is the complete `Route` definition from the sample application:
-
-@@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #all-routes }
-
-Note that one might want to separate those routes into smaller route values and concatenate them them together with 
-`route` into the `userRoutes` value - in a similar fashion like we do in the `QuickstartServer` leading to a bit less "dense" code.
 
 ## Binding the HTTP server
 
