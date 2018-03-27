@@ -67,13 +67,14 @@ public class UserRoutes extends AllDirectives {
             .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
             .thenApply(obj ->(Optional<User>) obj);
 
-          return rejectEmptyResponse(() ->
-            onSuccess(
-              () -> maybeUser,
-              performed ->
-                complete(StatusCodes.OK, (User) performed.get(), Jackson.<User>marshaller())
-            )
-          );
+          return onSuccess(() -> maybeUser,
+              performed -> {
+                  if (performed.isPresent())
+                      return complete(StatusCodes.OK, performed.get(), Jackson.marshaller());
+                  else
+                      return complete(StatusCodes.NOT_FOUND);
+              }
+            );
           //#retrieve-user-info
         });
     }
