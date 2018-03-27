@@ -70,8 +70,13 @@ public class UserRoutes extends AllDirectives {
           return rejectEmptyResponse(() ->
             onSuccess(
               () -> maybeUser,
-              performed ->
-                complete(StatusCodes.OK, (User) performed.get(), Jackson.<User>marshaller())
+              performed -> {
+                  if (performed.isPresent())
+                    return complete(StatusCodes.OK, performed.get(), Jackson.marshaller());
+                  else
+                    return complete(StatusCodes.NOT_FOUND);
+
+              }
             )
           );
           //#retrieve-user-info
