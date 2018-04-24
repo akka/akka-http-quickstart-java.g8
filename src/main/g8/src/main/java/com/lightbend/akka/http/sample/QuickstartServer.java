@@ -42,15 +42,9 @@ public class QuickstartServer extends AllDirectives {
         QuickstartServer app = new QuickstartServer(system, userRegistryActor);
 
         final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = app.createRoute().flow(system, materializer);
-        final CompletionStage<ServerBinding> binding = http.bindAndHandle(routeFlow,
-                ConnectHttp.toHost("localhost", 8080), materializer);
+        http.bindAndHandle(routeFlow, ConnectHttp.toHost("localhost", 8080), materializer);
 
-        System.out.println("Server online at http://localhost:8080/\nPress RETURN to stop...");
-        System.in.read(); // let it run until user presses return
-
-        binding
-                .thenCompose(ServerBinding::unbind) // trigger unbinding from the port
-                .thenAccept(unbound -> system.terminate()); // and shutdown when done
+        System.out.println("Server online at http://localhost:8080/");
         //#http-server
     }
 
