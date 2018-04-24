@@ -138,11 +138,6 @@ The `bindAndHandle` method only takes three parameters; `routes`, the hostname w
 That's it! When this program runs, it starts an Akka HTTP server on localhost port 8080. Note that startup happens
 asynchronously and therefore the `bindAndHandle` method returns a `CompletionStage`.
 
-The code for stopping the server includes the `System.in.read()` method that will wait until RETURN is pressed on
-the keyboard. When that happens, `thenCompose` uses the `CompletionStage` returned when we started the server to get 
-to the `unbind()` method. Unbinding is also an asynchronous function. When the `CompletionStage` returned by `unbind()`
- completes, the example code makes sure that the actor system is properly terminated.
-
 ## The complete server code
 
 Here is the complete server code used in the sample:
