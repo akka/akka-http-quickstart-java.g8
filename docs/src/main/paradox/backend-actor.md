@@ -18,7 +18,7 @@ the actor itself, so we'll keep it very simple.
 The sample code in the `UserRegistryActor` is straightforward. It keeps registered users in a `Set`. Once it receives
 messages it matches them to the defined cases to determine which action to take:
 
-@@snip [UserRegistryActor.java]($g8src$/java/com/lightbend/akka/http/sample/UserRegistryActor.java)
+@@snip [UserRegistryActor.java]($g8src$/java/$package$/UserRegistryActor.java)
 
 If you feel you need to brush up on your Akka Actor knowledge, the [Getting Started Guide]
 ((http://doc.akka.io/docs/akka/current/java/guide/index.html)) reviews actor concepts in

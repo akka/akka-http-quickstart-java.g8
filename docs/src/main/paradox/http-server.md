@@ -4,7 +4,7 @@ HTTP Server logic
 Class `QuickstartServer` is intended to "bring it all together", it is the main class that will run the application, as well 
 as the class that should bootstrap all actors and other dependencies (database connections etc). 
 
-@@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/QuickstartServer.java) { #main-class }
+@@snip [QuickstartServer.java]($g8src$/java/$package$/QuickstartServer.java) { #main-class }
 
 Notice that we've separated out the `UserRoutes` class, in which we'll put all our actual route definitions.
 This is a good pattern to follow, especially once your application starts to grow and you'll need some form of 
@@ -32,7 +32,7 @@ A Route is constructed by nesting various *directives* which route an incoming r
 
 Below is the top-level `Route` definition that gives a high-level structure to the routes but delegates the specifics to individual functions:
 
-@@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #all-routes }
+@@snip [UserRoutes.java]($g8src$/java/$package$/UserRoutes.java) { #all-routes }
 
 We will look at how these are built up in more detail in the next couple of sections.
 
@@ -40,7 +40,7 @@ We will look at how these are built up in more detail in the next couple of sect
 
 The definition of the endpoint to retrieve and create users look like the following:
 
-@@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #users-get-post }
+@@snip [UserRoutes.java]($g8src$/java/$package$/UserRoutes.java) { #users-get-post }
 
 **Generic functionality**
 
@@ -75,7 +75,7 @@ Next, the example defines how to retrieve and remove a user. In this case, the U
 the form: `/users/$ID`. See if you can identify the code that handles that in the following snippet. This part of the route
 includes logic for both the GET and the DELETE methods.
 
-@@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #users-get-delete }
+@@snip [QuickstartServer.java]($g8src$/java/$package$/UserRoutes.java) { #users-get-delete }
 
 **Generic functionality**
 
@@ -98,7 +98,7 @@ for more information.
 
 Let's break down the logic handling the incoming request:
 
-@@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #retrieve-user-info }
+@@snip [UserRoutes.java]($g8src$/java/$package$/UserRoutes.java) { #retrieve-user-info }
 
 The `rejectEmptyResponse` here above is a convenience method that automatically unwraps a `CompletionStage`, handles an `Optional`
 by converting value into a successful response, returns a HTTP status code 404 if value is not present, and passes on to the
@@ -110,7 +110,7 @@ by converting value into a successful response, returns a HTTP status code 404 i
 
 The logic for handling delete requests is as follows:
 
-@@snip [UserRoutes.java]($g8src$/java/com/lightbend/akka/http/sample/UserRoutes.java) { #users-delete-logic }
+@@snip [UserRoutes.java]($g8src$/java/$package$/UserRoutes.java) { #users-delete-logic }
 
 So we send an instruction about removing a user to the user registry actor, wait for the response and return an
 appropriate HTTP status code to the client.
@@ -120,7 +120,7 @@ appropriate HTTP status code to the client.
 
 At the beginning of the `main` class, the example defines some implicit values that will be used by the Akka HTTP server:
 
-@@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/QuickstartServer.java) { #server-bootstrapping }
+@@snip [QuickstartServer.java]($g8src$/java/$package$/QuickstartServer.java) { #server-bootstrapping }
 
 Akka Streams uses these values:
 
@@ -132,7 +132,7 @@ executable entities which are run on actors, and this is why it requires an Acto
 
 Further down in `QuickstartServer.java`, you will find the code to instantiate the server:
 
-@@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/QuickstartServer.java) { #http-server }
+@@snip [QuickstartServer.java]($g8src$/java/$package$/QuickstartServer.java) { #http-server }
 
 The `bindAndHandle` method only takes three parameters; `routes`, the hostname with the port and materializer. 
 That's it! When this program runs, it starts an Akka HTTP server on localhost port 8080. Note that startup happens
@@ -142,6 +142,6 @@ asynchronously and therefore the `bindAndHandle` method returns a `CompletionSta
 
 Here is the complete server code used in the sample:
 
-@@snip [QuickstartServer.java]($g8src$/java/com/lightbend/akka/http/sample/QuickstartServer.java)
+@@snip [QuickstartServer.java]($g8src$/java/$package$/QuickstartServer.java)
 
 Let's move on to the actor that handles registration.
