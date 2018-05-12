@@ -15,7 +15,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-mainClassName = "com.lightbend.akka.http.sample.QuickstartServer"
+mainClassName = "$package$.QuickstartServer"
 
 run {
     standardInput = System.in
