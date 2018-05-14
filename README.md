@@ -1,4 +1,12 @@
-A [Giter8][g8] template for Akka HTTP in Java
+## Akka HTTP quickstart in Java
+
+Please see the [quickstart guide](https://developer.lightbend.com/guides/akka-http-quickstart-java/) for a
+walk through the code.
+
+You can use [Giter8][g8] to create your own project from the quickstart. Alternatively, you can download
+a packaged version of this project by clicking "Create a project for me!" on the
+[Lightbend Getting Started](https://developer.lightbend.com/start/?group=akka&project=akka-http-quickstart-java)
+page.
 
 Prerequisites:
 - JDK 8

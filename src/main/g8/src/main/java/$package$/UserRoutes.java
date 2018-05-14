@@ -1,4 +1,4 @@
-package com.lightbend.akka.http.sample;
+package $package$;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -11,9 +11,9 @@ import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
 import akka.pattern.PatternsCS;
 import akka.util.Timeout;
-import com.lightbend.akka.http.sample.UserRegistryActor.User;
-import com.lightbend.akka.http.sample.UserRegistryMessages.ActionPerformed;
-import com.lightbend.akka.http.sample.UserRegistryMessages.CreateUser;
+import $package$.UserRegistryActor.User;
+import $package$.UserRegistryMessages.ActionPerformed;
+import $package$.UserRegistryMessages.CreateUser;
 import scala.concurrent.duration.Duration;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.lightbend.akka.http.sample;
+package $package$;
 
 import akka.actor.*;
 import akka.event.Logging;

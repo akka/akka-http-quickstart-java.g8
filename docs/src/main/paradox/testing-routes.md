@@ -23,7 +23,7 @@ an application using Akka.
 
 First we'll need to extend a number of base traits:
 
-@@snip [QuickstartServer.java]($g8srctest$/java/com/lightbend/akka/http/sample/UserRoutesTest.java) { #test-top }
+@@snip [QuickstartServer.java]($g8srctest$/java/$package$/UserRoutesTest.java) { #test-top }
 
 Here we're using `JUnitRouteTest` which provides ability to test akka-http routes. 
 
@@ -31,13 +31,13 @@ Next, we'll need to bring into the test class our routes that we want to test. W
 into `TestRoute` by using `testRoute(server.createRoute())` to be able to provide request parameters to emulate HTTP call 
 and then assert results. You can assert HTML body or header values as well as response code itself.
 
-@@snip [QuickstartServer.java]($g8srctest$/java/com/lightbend/akka/http/sample/UserRoutesTest.java) { #set-up }
+@@snip [QuickstartServer.java]($g8srctest$/java/$package$/UserRoutesTest.java) { #set-up }
 
 We could create an actor that replies with a mocked response here instead if we wanted to, this is especially useful if
 the route awaits an response from the actor before rendering the `HttpResponse` to the client. 
 Let's write our first test, in which we'll hit the `/users` endpoint with a `GET` request:
 
-@@snip [QuickstartServer.java]($g8srctest$/java/com/lightbend/akka/http/sample/UserRoutesTest.java) { #actual-test }
+@@snip [QuickstartServer.java]($g8srctest$/java/$package$/UserRoutesTest.java) { #actual-test }
 
 We simply construct a raw `HttpRequest` object and pass it into the route using the `run`.
 Next, we do the same and pipe the result of that route into a check block, so the full syntax is:
@@ -49,13 +49,13 @@ Checking looks like following: `assertStatusCode(StatusCodes.OK).assertMediaType
 In the next test we'd like test a `POST` endpoint, so we need to send an entity to the endpoint in order to create a new
 `User`. We are using similar approach `HttpRequest.POST("/users")` to what we have for GET test.
 
-@@snip [QuickstartServer.java]($g8srctest$/java/com/lightbend/akka/http/sample/UserRoutesTest.java) { #testing-post }
+@@snip [QuickstartServer.java]($g8srctest$/java/$package$/UserRoutesTest.java) { #testing-post }
 
 ### Complete unit unit test code listing
 
 For reference, here's the entire unit test code:
 
-@@snip [QuickstartServer.java]($g8srctest$/java/com/lightbend/akka/http/sample/UserRoutesTest.java)
+@@snip [QuickstartServer.java]($g8srctest$/java/$package$/UserRoutesTest.java)
 
 
 ## A note Integration testing routes

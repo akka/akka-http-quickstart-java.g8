@@ -1,6 +1,6 @@
-package com.lightbend.akka.http.sample;
+package $package$;
 
-import com.lightbend.akka.http.sample.UserRegistryActor.User;
+import $package$.UserRegistryActor.User;
 
 import java.io.Serializable;
 

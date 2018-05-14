@@ -15,7 +15,7 @@ To fill object with JSON data we you'll need to create unmarshaller with class a
 
 Data transfer classes that we are using to interact with actors does not have any links to Jackson itself:
 
-@@snip [UserRegistryActor.java]($g8src$/java/com/lightbend/akka/http/sample/UserRegistryActor.java) { #user-case-classes }
+@@snip [UserRegistryActor.java]($g8src$/java/$package$/UserRegistryActor.java) { #user-case-classes }
 
 @@@ note
   
