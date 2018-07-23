@@ -64,7 +64,7 @@ public class UserRegistryActor extends AbstractActor {
     return Props.create(UserRegistryActor.class);
   }
 
-  private final List<User> users =new ArrayList<>();
+  private final List<User> users = new ArrayList<>();
 
   @Override
   public Receive createReceive(){
