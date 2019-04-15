@@ -1,12 +1,11 @@
 package $package$;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 
 import $package$.UserRegistryActor.User;
 import $package$.UserRegistryMessages.ActionPerformed;
-import $package$.UserRegistryMessages.CreateUser;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
@@ -17,10 +16,6 @@ import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
 import akka.pattern.Patterns;
-import akka.util.Timeout;
-import scala.compat.java8.FutureConverters;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 /**
  * Routes can be defined in separated classes like shown in here
@@ -38,7 +33,7 @@ public class UserRoutes extends AllDirectives {
     }
 
     // Required by the `ask` (?) method below
-    Timeout timeout = new Timeout(Duration.create(5, TimeUnit.SECONDS)); // usually we'd obtain the timeout from the system's configuration
+    Duration timeout = Duration.ofSeconds(5l); // usually we'd obtain the timeout from the system's configuration
 
     /**
      * This method creates one route (of possibly many more that will be part of your Web App)
@@ -64,11 +59,10 @@ public class UserRoutes extends AllDirectives {
     //#users-get-delete
     private Route getUser(String name) {
       return get(() -> {
-          //#retrieve-user-info
-          Future<Object> getUserFuture = Patterns.ask(userRegistryActor, new UserRegistryMessages.GetUser(name),
-          timeout);
-          CompletionStage<Optional<User>> maybeUser = FutureConverters.toJava(getUserFuture)
-            .thenApply(Optional.class::cast);
+          // #retrieve-user-info
+          CompletionStage<Optional<User>> maybeUser = Patterns
+                  .ask(userRegistryActor, new UserRegistryMessages.GetUser(name), timeout)
+                  .thenApply(Optional.class::cast);
 
           return onSuccess(() -> maybeUser,
               performed -> {
@@ -86,10 +80,9 @@ public class UserRoutes extends AllDirectives {
       return
           //#users-delete-logic
           delete(() -> {
-            Future<Object> deleteUserFuture = Patterns.ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name),
-                 timeout);
-            CompletionStage<ActionPerformed> userDeleted = FutureConverters.toJava(deleteUserFuture)
-                 .thenApply(ActionPerformed.class::cast);
+            CompletionStage<ActionPerformed> userDeleted = Patterns
+              .ask(userRegistryActor, new UserRegistryMessages.DeleteUser(name), timeout)
+              .thenApply(ActionPerformed.class::cast);
 
             return onSuccess(() -> userDeleted,
               performed -> {
@@ -107,10 +100,9 @@ public class UserRoutes extends AllDirectives {
         return pathEnd(() ->
             route(
                 get(() -> {
-                    Future<Object> getUsersFuture = Patterns.ask(userRegistryActor, new UserRegistryMessages.GetUsers(),
-                            timeout);
-                    CompletionStage<UserRegistryActor.Users> futureUsers = FutureConverters.toJava(getUsersFuture)
-                            .thenApply(UserRegistryActor.Users.class::cast);
+                    CompletionStage<UserRegistryActor.Users> futureUsers = Patterns
+                        .ask(userRegistryActor, new UserRegistryMessages.GetUsers(), timeout)
+                        .thenApply(UserRegistryActor.Users.class::cast);
                     return onSuccess(() -> futureUsers,
                         users -> complete(StatusCodes.OK, users, Jackson.marshaller()));
                 }),
@@ -118,10 +110,9 @@ public class UserRoutes extends AllDirectives {
                     entity(
                         Jackson.unmarshaller(User.class),
                         user -> {
-                            Future<Object> createUserFuture = Patterns.ask(userRegistryActor, new CreateUser(user),
-                                    timeout);
-                            CompletionStage<ActionPerformed> userCreated = FutureConverters.toJava(createUserFuture)
-                                    .thenApply(ActionPerformed.class::cast);
+                            CompletionStage<ActionPerformed> userCreated = Patterns
+                                .ask(userRegistryActor, new UserRegistryMessages.CreateUser(user), timeout)
+                                .thenApply(ActionPerformed.class::cast);
                             return onSuccess(() -> userCreated,
                                 performed -> {
                                     log.info("Created user [{}]: {}", user.getName(), performed.getDescription());
