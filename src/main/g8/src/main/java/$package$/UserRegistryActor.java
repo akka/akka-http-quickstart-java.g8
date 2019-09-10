@@ -31,14 +31,6 @@ public class UserRegistryActor extends AbstractActor {
       this.countryOfResidence = countryOfResidence;
     }
 
-    /*
-    public User(String name, int age, String countryOfResidence) {
-      this.name = name;
-      this.age = age;
-      this.countryOfResidence = countryOfResidence;
-    }
-    */
-
     public String getName() {
       return name;
     }
