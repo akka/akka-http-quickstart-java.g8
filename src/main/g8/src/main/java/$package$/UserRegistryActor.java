@@ -23,11 +23,21 @@ public class UserRegistryActor extends AbstractActor {
       this.age = 1;
     }
 
+    // for use Jackson.unmarshaller
+    @JsonCreator
+    User(@JsonProperty("name") String name, @JsonProperty("age") int age, @JsonProperty("conuntryOfResidence") String countryOfResidence) {
+      this.name = name;
+      this.age = age;
+      this.countryOfResidence = countryOfResidence;
+    }
+
+    /*
     public User(String name, int age, String countryOfResidence) {
       this.name = name;
       this.age = age;
       this.countryOfResidence = countryOfResidence;
     }
+    */
 
     public String getName() {
       return name;
