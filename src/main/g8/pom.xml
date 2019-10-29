@@ -9,23 +9,34 @@
     <dependencies>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http_2.12</artifactId>
-            <version>$akka_http_version$</version>
+            <artifactId>akka-http_2.13</artifactId>
+            <version>10.1.10</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-stream_2.12</artifactId>
-            <version>$akka_version$</version>
+            <artifactId>akka-actor-typed_2.13</artifactId>
+            <version>2.6.0-RC2</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http-jackson_2.12</artifactId>
-            <version>$akka_http_version$</version>
+            <artifactId>akka-stream_2.13</artifactId>
+            <version>2.6.0-RC2</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http-testkit_2.12</artifactId>
-            <version>$akka_http_version$</version>
+            <artifactId>akka-http-jackson_2.13</artifactId>
+            <version>10.1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http-testkit_2.13</artifactId>
+            <version>10.1.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor-testkit-typed_2.13</artifactId>
+            <version>2.6.0-RC2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -51,7 +62,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <mainClass>$package$.QuickstartServer</mainClass>
+                    <mainClass>$package$.QuickstartApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

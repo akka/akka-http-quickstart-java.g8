@@ -2,31 +2,33 @@ package $package$;
 
 
 //#test-top
-
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-
+import akka.actor.typed.ActorRef;
 import akka.http.javadsl.model.*;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
-import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.StatusCodes;
+import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 
 
 //#set-up
 public class UserRoutesTest extends JUnitRouteTest {
+
+    @ClassRule
+    public static TestKitJunitResource testkit = new TestKitJunitResource();
+
     //#test-top
-    private TestRoute appRoute;
+    private static TestRoute appRoute;
 
 
     @Before
-    public void initClass() {
-        ActorSystem system = ActorSystem.create("helloAkkaHttpServer");
-        ActorRef userRegistryActor = system.actorOf(UserRegistryActor.props(), "userRegistryActor");
-        QuickstartServer server = new QuickstartServer(system, userRegistryActor);
-        appRoute = testRoute(server.createRoute());
+    public static void initClass() {
+        ActorRef<UserRegistry.Command> userRegistry = testkit.spawn(UserRegistry.create(), "UserRegistry");
+        UserRoutes userRoutes = new UserRoutes(testkit.system(), userRegistry);
+        appRoute = testRoute(userRoutes.userRoutes());
     }
     //#set-up
     //#actual-test
