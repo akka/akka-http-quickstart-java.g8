@@ -6,9 +6,7 @@ import akka.actor.typed.ActorRef;
 import akka.http.javadsl.model.*;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.StatusCodes;
 import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
@@ -21,15 +19,26 @@ public class UserRoutesTest extends JUnitRouteTest {
     public static TestKitJunitResource testkit = new TestKitJunitResource();
 
     //#test-top
-    private static TestRoute appRoute;
+    // shared registry for all tests
+    private static ActorRef<UserRegistry.Command> userRegistry;
+    private TestRoute appRoute;
 
+    @BeforeClass
+    public static void beforeClass() {
+        userRegistry = testkit.spawn(UserRegistry.create());
+    }
 
     @Before
-    public static void initClass() {
-        ActorRef<UserRegistry.Command> userRegistry = testkit.spawn(UserRegistry.create(), "UserRegistry");
+    public void before() {
         UserRoutes userRoutes = new UserRoutes(testkit.system(), userRegistry);
         appRoute = testRoute(userRoutes.userRoutes());
     }
+
+    @AfterClass
+    public static void afterClass() {
+        testkit.stop(userRegistry);
+    }
+
     //#set-up
     //#actual-test
     @Test

@@ -20,7 +20,7 @@ import java.util.concurrent.CompletionStage;
 
 //#main-class
 public class QuickstartApp {
-
+    // #start-http-server
     static void startHttpServer(Route route, ActorSystem<?> system) {
         // Akka HTTP still needs a classic ActorSystem to start
         akka.actor.ActorSystem classicSystem = Adapter.toClassic(system);
@@ -43,7 +43,7 @@ public class QuickstartApp {
             }
         });
     }
-    //#main-class
+    // #start-http-server
 
     public static void main(String[] args) throws Exception {
         //#server-bootstrapping
@@ -57,24 +57,11 @@ public class QuickstartApp {
             return Behaviors.empty();
         });
 
-
         // boot up server using the route as defined below
         ActorSystem.create(rootBehavior, "HelloAkkaHttpServer");
-
-
         //#server-bootstrapping
-
-
-
-        //#http-server
-        //In order to access all directives we need an instance where the routes are define.
-
-
-
-        //#http-server
     }
 
-    //#main-class
 }
 //#main-class
 

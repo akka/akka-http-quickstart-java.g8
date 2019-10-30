@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
+//#user-registry-actor
 public class UserRegistry extends AbstractBehavior<UserRegistry.Command>  {
 
   // actor protocol
@@ -135,3 +136,4 @@ public class UserRegistry extends AbstractBehavior<UserRegistry.Command>  {
   }
 
 }
+//#user-registry-actor

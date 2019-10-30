@@ -10,7 +10,9 @@ import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Scheduler;
 import akka.actor.typed.javadsl.AskPattern;
 import akka.http.javadsl.marshallers.jackson.Jackson;
+
 import static akka.http.javadsl.server.Directives.*;
+
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
@@ -57,6 +59,7 @@ public class UserRoutes {
   public Route userRoutes() {
     return pathPrefix("users", () ->
         concat(
+            //#users-get-delete
             pathEnd(() ->
                 concat(
                     get(() ->
@@ -69,27 +72,38 @@ public class UserRoutes {
                             Jackson.unmarshaller(User.class),
                             user ->
                                 onSuccess(createUser(user), performed -> {
-                                  log.info("Created user [{}]: {}", user.name, performed.description);
+                                  log.info("Create result: {}", performed.description);
                                   return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
                                 })
                         )
                     )
                 )
             ),
+            //#users-get-delete
+            //#users-get-post
             path(PathMatchers.segment(), (String name) ->
                 concat(
-                    rejectEmptyResponse(() ->
-                        onSuccess(getUser(name), performed ->
-                            complete(StatusCodes.OK, performed.maybeUser, Jackson.marshaller())
-                        )
+                    get(() ->
+                            //#retrieve-user-info
+                            rejectEmptyResponse(() ->
+                                onSuccess(getUser(name), performed ->
+                                    complete(StatusCodes.OK, performed.maybeUser, Jackson.marshaller())
+                                )
+                            )
+                        //#retrieve-user-info
                     ),
-                    onSuccess(deleteUser(name), performed -> {
-                          log.info("Deleted user [{}]: {}", name, performed.description);
-                          return complete(StatusCodes.OK, performed, Jackson.marshaller());
-                        }
+                    delete(() ->
+                            //#users-delete-logic
+                            onSuccess(deleteUser(name), performed -> {
+                                  log.info("Delete result: {}", performed.description);
+                                  return complete(StatusCodes.OK, performed, Jackson.marshaller());
+                                }
+                            )
+                        //#users-delete-logic
                     )
                 )
             )
+            //#users-get-post
         )
     );
   }
