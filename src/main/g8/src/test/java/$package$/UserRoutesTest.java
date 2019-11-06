@@ -7,12 +7,14 @@ import akka.http.javadsl.model.*;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
 import org.junit.*;
+import org.junit.runners.MethodSorters;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.StatusCodes;
 import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 
 
 //#set-up
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserRoutesTest extends JUnitRouteTest {
 
     @ClassRule
@@ -42,7 +44,7 @@ public class UserRoutesTest extends JUnitRouteTest {
     //#set-up
     //#actual-test
     @Test
-    public void testNoUsers() {
+    public void test1NoUsers() {
         appRoute.run(HttpRequest.GET("/users"))
                 .assertStatusCode(StatusCodes.OK)
                 .assertMediaType("application/json")
@@ -52,7 +54,7 @@ public class UserRoutesTest extends JUnitRouteTest {
     //#actual-test
     //#testing-post
     @Test
-    public void testHandlePOST() {
+    public void test2HandlePOST() {
         appRoute.run(HttpRequest.POST("/users")
                 .withEntity(MediaTypes.APPLICATION_JSON.toContentType(),
                         "{\"name\": \"Kapi\", \"age\": 42, \"countryOfResidence\": \"jp\"}"))
@@ -63,7 +65,7 @@ public class UserRoutesTest extends JUnitRouteTest {
     //#testing-post
 
     @Test
-    public void testRemove() {
+    public void test3Remove() {
         appRoute.run(HttpRequest.DELETE("/users/Kapi"))
                 .assertStatusCode(StatusCodes.OK)
                 .assertMediaType("application/json")
