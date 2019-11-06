@@ -9,23 +9,39 @@
     <dependencies>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http_2.12</artifactId>
+            <artifactId>akka-http_2.13</artifactId>
             <version>$akka_http_version$</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-stream_2.12</artifactId>
+            <artifactId>akka-actor-typed_2.13</artifactId>
             <version>$akka_version$</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http-jackson_2.12</artifactId>
-            <version>$akka_http_version$</version>
+            <artifactId>akka-stream_2.13</artifactId>
+            <version>$akka_version$</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http-testkit_2.12</artifactId>
+            <artifactId>akka-http-jackson_2.13</artifactId>
             <version>$akka_http_version$</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http-testkit_2.13</artifactId>
+            <version>$akka_http_version$</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor-testkit-typed_2.13</artifactId>
+            <version>$akka_version$</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -51,9 +67,12 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <mainClass>$package$.QuickstartServer</mainClass>
+                    <mainClass>$package$.QuickstartApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>

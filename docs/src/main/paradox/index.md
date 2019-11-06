@@ -1,50 +1,32 @@
-Akka HTTP Quickstart for Java
+Akka HTTP Quickstart for Scala
 ==============================
 
-Akka HTTP offers a general toolkit for providing and consuming HTTP-based services.
-The Akka HTTP modules implement a full server- and client-side HTTP stack on top of
-`akka-actor` and `akka-stream`. A typical application does not sit on top of Akka HTTP.
-Instead, Akka HTTP makes it easier to build integration layers based on HTTP, and
-therefore stays on the sidelines. This allows you to base your app on what makes sense
- and use Akka HTTP for HTTP integration.
+Akka HTTP offers a general toolkit for providing and consuming HTTP-based services. The Akka HTTP modules implement a full server- and client-side HTTP stack on top of `akka-actor` and `akka-stream`. A typical application does not sit on top of Akka HTTP. Instead, Akka HTTP makes it easier to build integration layers based on HTTP, and therefore stays on the sidelines. This allows you to base your app on what makes sense and use Akka HTTP for HTTP integration.
 
-Akka HTTP is not a framework--not because we don't like frameworks--but to provide maximum
-flexibility. For example, you might use the Play framework to implement browser-based interactions
-or Lagom framework for creating microservices, both of them are also based on Akka.
+Akka HTTP is not a framework--not because we don't like frameworks--but to provide maximum flexibility. For example, you might use the Play framework to implement browser-based interactions or Lagom framework for creating microservices, both of them are also based on Akka.
 
-Akka HTTP follows a rather open design and often offers several APIs for accomplishing the same thing.
-You can choose the API with the level of abstraction that best suits your application.
-If you have trouble achieving something using a high-level API, you can probably find a
-lower-level API to use. The low-level APIs offer more flexibility but might require you to write
- more application code.
+Akka HTTP follows a rather open design and often offers several APIs for accomplishing the same thing. You can choose the API with the level of abstraction that best suits your application.  If you have trouble achieving something using a high-level API, you can probably find a lower-level API to use. The low-level APIs offer more flexibility, but might require you to write more application code.
 
-This guide highlights Akka HTTP fundamentals in the context of a simple user registry
-[REST service](https://en.wikipedia.org/wiki/Representational_state_transfer). Within 30 minutes,
-you should be able to:
+This guide highlights Akka HTTP fundamentals in the context of a simple user registry [REST service](https://en.wikipedia.org/wiki/Representational_state_transfer). Within 30 minutes, you should be able to:
 
 * Download the quickstart project and run the app.
 * Follow this guide to explore the code.
-* Integrate the project into IntelliJ. If you prefer a different IDE, the principles should be similar,
-as long as it supports Java.
+* Integrate the project into IntelliJ. If you prefer a different IDE, the principles should be similar, as long as it supports Java.
 
 ## Prerequisite
 
-Having a basic understanding of Akka actors will make it easier to understand the example.
-If you are new to Akka, we recommend completing the
-[Akka Quickstart](https://developer.lightbend.com/guides/akka-quickstart-java/) guide before this tutorial.
+Having a basic understanding of Akka actors will make it easier to understand the example. If you are new to Akka, we recommend completing the [Akka Quickstart](https://developer.lightbend.com/guides/akka-quickstart-java/) guide before this tutorial.
 
 You can run the Akka HTTP example project on Linux, MacOS, or Windows. The only prerequisite is Java 8.
 
 ## Downloading the example
 
-The Akka HTTP example for Java is a zipped project that includes a distribution of the
- [sbt](http://www.scala-sbt.org) build tool, as well as gradle and maven. Download and unzip the example as follows:
+The Akka HTTP example for Java is a zipped project that includes a distribution of the [sbt](http://www.scala-sbt.org) build tool, as well as gradle and maven. Download and unzip the example as follows:
 
 1. Download the project as a compressed file from [Lightbend Tech Hub](https://developer.lightbend.com/start/?group=akka&project=akka-http-quickstart-java) by clicking `CREATE A PROJECT FOR ME`.
 2. Extract the zip file to a convenient location:
 
-* On Linux and MacOS systems, open a terminal and use the command `unzip` akka-quickstart-java.zip. Note: On OSX,
- if you unzip using Archiver, you also have to make the sbt files executable by entering the following two commands:
+* On Linux and MacOS systems, open a terminal and use the command `unzip` akka-quickstart-java.zip. Note: On OSX, if you unzip using Archiver, you also have to make the sbt files executable by entering the following two commands:
 
 ```
 $ chmod u+x ./sbt
@@ -59,8 +41,7 @@ To run Hello World:
 
 In a console, change directories to the top level of the unzipped project.
 
-For example, if you used the default project name, `akka-http-quickstart-java`, and extracted the project
-to your root directory, from the root directory, enter: `cd akka-http-quickstart-java`
+For example, if you used the default project name, `akka-http-quickstart-java`, and extracted the project to your root directory, from the root directory, enter: `cd akka-http-quickstart-java`
 
 Start sbt:
 
@@ -78,8 +59,8 @@ The output should look something like this:
 ```
 [info] Loading global plugins from /Users/x/.sbt/0.13/plugins
 ...
-[info] Running com.lightbend.akka.http.sample.QuickstartServer
-Server online at http://localhost:8080/
+[info] Running com.example.QuickstartServer
+[2019-10-24 15:26:39,182] [INFO] [HelloAkkaHttpServer] [HelloAkkaHttpServer-akka.actor.default-dispatcher-3] [akka://HelloAkkaHttpServer/user/HttpServer] - Server online at http://127.0.0.1:8080/
 ```
 
 The Akka HTTP server is now running, and you can test it by sending simple HTTP requests.
@@ -89,10 +70,9 @@ To restart your application each time a change is detected, run `~reStart`.
 
 ## Example app overview
 
-The user registry example contains functionality for adding, retrieving, or deleting a single user and for
-retrieving all users. Akka HTTP provides a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language) (DSL) to simplify the definition of endpoints as a `Route`. In this example, a `Route` defines: the paths `/users` and `/user`, the available HTTP methods, and when applicable, parameters or payloads.
+The user registry example contains functionality for adding, retrieving, or deleting a single user and for  retrieving all users. Akka HTTP provides a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language) (DSL) to simplify the definition of endpoints as a `Route`. In this example, a `Route` defines: the paths `/users` and `/user`, the available HTTP methods, and when applicable, parameters or payloads.
 
-When the example app starts up, it creates an ActorSystem with a `userRegistryActor` and binds the defined routes to a port, in this case, `localhost:8080`. When the endpoints are invoked, they interact with the `userRegistryActor`, which contains the business logic. The diagram below illustrates runtime behavior, where that the HTTP server receives for the defined `route` endpoints, which are handled by the `userRegistryActor`:
+When the example app starts up, it creates an ActorSystem with a `UserRegistry` Actor and binds the defined routes to a port, in this case, `localhost:8080`. When the endpoints are invoked, they interact with the `UserRegistry` Actor, which contains the business logic. The diagram below illustrates runtime behavior, where that the HTTP server receives for the defined `route` endpoints, which are handled by the `UserRegistry` actor:
 
 ![Architecture](images/hello-akka-http.png)
 
@@ -197,10 +177,9 @@ Congratulations, you just ran and exercised your first Akka HTTP app! You got a 
 
 The example is implemented in the following three source files:
 
-* `QuickstartServer.java` -- contains the main class which sets-up and run all actors, as well as Akka HTTP `routes`.
-* `UserRoutes.java` -- contains Akka HTTP `routes` that the Server will serve.
-* `UserRegistryActor.java` -- implements the actor that handles registration.
-* `UserRegistryMessages.java` -- contains UserRegistryActor specific messages.
+* `QuickstartApp.java` -- contains the main method which bootstraps the application 
+* `UserRoutes.java` -- Akka HTTP `routes` defining exposed endpoints
+* `UserRegistry.java` -- the actor which handles the registration requests
 
 First, let's dissect the backend logic.
 

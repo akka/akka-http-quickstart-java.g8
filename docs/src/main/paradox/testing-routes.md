@@ -1,25 +1,15 @@
 Testing routes
 --------------
 
-If you remember when we started out with our `QuickstartServer`, we decided to put the routes themselves into a separate 
-class. Back there we said that we're doing this to separate the infrastructure code (setting up the actor system and
-wiring up all the dependencies and actors), from the routes, which should only declare what they need to work with,
-and can, therefore, be a bit more focused on their task at hand. This, of course, leads us to better testability.
+If you remember when we started out with our `QuickstartApp`, we decided to put the routes themselves into a separate class. Back there we said that we're doing this to separate the infrastructure code (setting up the actor system and wiring up all the dependencies and actors), from the routes, which should only declare what they need to work with, and can, therefore, be a bit more focused on their task at hand. This, of course, leads us to better testability.
 
-This separation, other than being a good idea on its own, was all for this moment! For when we want to write tests
-to cover all our routes, without having to bring up the entire application. 
+This separation, other than being a good idea on its own, was all for this moment! For when we want to write tests to cover all our routes, without having to bring up the entire application. 
 
 ## Unit testing routes
 
-There are multiple ways one can test an HTTP application of course, but lets start at the simplest and also quickest
-way: unit testing. In this style of testing, we won't even need to spin up an actual server - all the tests will be 
-executed on the routes directly - without the need of hitting actual network. This is due to Akka HTTP's pure design
-and separation between the network layer (represented as a bi-directional `Flow` of byte strings to Http domain objects).
+There are multiple ways one can test an HTTP application of course, but lets start at the simplest and also quickest way: unit testing. In this style of testing, we won't even need to spin up an actual server - all the tests will be executed on the routes directly - without the need of hitting actual network. This is due to Akka HTTP's pure design and separation between the network layer (represented as a bi-directional `Flow` of byte strings to Http domain objects).
 
-In other words, unit testing in Akka HTTP is simply "executing" the routes by passing in an `HttpResponse` to the route,
-and later inspecting what `HttpResponse` (or `rejection` if the request could not be handled) it resulted in. All this 
-in-memory, without having to start a real HTTP server - which gives us supreme speed and turn-over time when developing
-an application using Akka.
+In other words, unit testing in Akka HTTP is simply "executing" the routes by passing in an `HttpResponse` to the route, and later inspecting what `HttpResponse` (or `rejection` if the request could not be handled) it resulted in. All this in-memory, without having to start a real HTTP server - which gives us supreme speed and turn-over time when developing an application using Akka.
 
 First we'll need to extend a number of base traits:
 
