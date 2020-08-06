@@ -22,14 +22,8 @@ import java.util.concurrent.CompletionStage;
 public class QuickstartApp {
     // #start-http-server
     static void startHttpServer(Route route, ActorSystem<?> system) {
-        // Akka HTTP still needs a classic ActorSystem to start
-        akka.actor.ActorSystem classicSystem = Adapter.toClassic(system);
-        final Http http = Http.get(classicSystem);
-        final Materializer materializer = Materializer.matFromSystem(system);
-
-        final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = route.flow(classicSystem, materializer);
         CompletionStage<ServerBinding> futureBinding =
-            http.bindAndHandle(routeFlow, ConnectHttp.toHost("localhost", 8080), materializer);
+            Http.get(system).newServerAt("localhost", 8080).bind(route);
 
         futureBinding.whenComplete((binding, exception) -> {
             if (binding != null) {
