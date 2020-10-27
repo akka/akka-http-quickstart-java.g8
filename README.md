@@ -8,6 +8,8 @@ a packaged version of this project by clicking "Create a project for me!" on the
 [Lightbend Getting Started](https://developer.lightbend.com/start/?group=akka&project=akka-http-quickstart-java)
 page.
 
+test
+
 Prerequisites:
 - JDK 8
 - [sbt][sbt] 0.13.13 or higher ([download here][sbt_download])
