@@ -10,11 +10,11 @@ page.
 
 Prerequisites:
 - JDK 8
-- [sbt][sbt] 0.13.13 or higher ([download here][sbt_download])
+- [sbt][sbt] 1.4.5 or higher ([download here][sbt_download])
 
 Open a console and run the following command to apply this template:
  ```
-sbt -Dsbt.version=0.13.15 new akka/akka-http-java-seed.g8
+sbt -Dsbt.version=1.4.5 new akka/akka-http-java-seed.g8
  ```
 
 This template will prompt for the following parameters. Press `Enter` if the default values suit you:

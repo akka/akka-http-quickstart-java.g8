@@ -1,5 +1,5 @@
-lazy val akkaHttpVersion = "$akka_http_version$"
-lazy val akkaVersion    = "$akka_version$"
+val akkaHttpVersion = "$akka_http_version$"
+val akkaVersion    = "$akka_version$"
 
 lazy val root = (project in file(".")).
   settings(
