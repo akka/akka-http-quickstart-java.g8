@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  check:
+  build-test:
     if: github.repository == 'akka/akka-http-quickstart-java.g8'
     runs-on: ubuntu-20.04
 
