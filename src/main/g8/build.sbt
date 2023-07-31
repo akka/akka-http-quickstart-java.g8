@@ -1,6 +1,8 @@
 val akkaHttpVersion = "$akka_http_version$"
 val akkaVersion    = "$akka_version$"
 
+resolvers += "Akka library repository".at("https://repo.akka.io/maven")
+
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
