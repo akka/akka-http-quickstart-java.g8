@@ -6,12 +6,12 @@ walk through the code.
 You can use [Giter8][g8] to create your own project from the quickstart. Or, download and extract the zip file(https://example.lightbend.com/v1/download/akka-quickstart-scala?name=akka-quickstart-scala) to a convenient location.
 
 Prerequisites:
-- JDK 11
-- [sbt][sbt] 1.4.5 or higher ([download here][sbt_download])
+- JDK 17
+- [sbt][sbt] 1.9.6 or higher ([download here][sbt_download])
 
 Open a console and run the following command to apply this template:
  ```
-sbt -Dsbt.version=1.4.5 new akka/akka-http-java-seed.g8
+sbt new akka/akka-http-java-seed.g8
  ```
 
 This template will prompt for the following parameters. Press `Enter` if the default values suit you:
@@ -22,7 +22,7 @@ This template will prompt for the following parameters. Press `Enter` if the def
 
 This template comes with example for an Akka HTTP server on Java `QuickstartServer`, along with their respective tests.
 
-Once inside the project folder, to run this code, you can following command to run server:
+Once inside the project folder, to run this code, you can issue the following command to run the server:
 ```
 sbt run
 ```
