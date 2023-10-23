@@ -25,3 +25,11 @@ jobs:
 
       - name: sbt & Paradox
         run: sbt test docs/paradox
+
+      - name: Maven
+        run: |-
+          sbt new file://$PWD --name=hello-world --force && pushd hello-world &&  mvn test
+
+      - name: Gradle
+        run: |-
+          sbt new file://$PWD --name=hello-world --force && pushd hello-world &&  ./gradlew --console=plain build
