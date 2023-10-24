@@ -72,7 +72,7 @@ public class UserRoutes {
                             Jackson.unmarshaller(User.class),
                             user ->
                                 onSuccess(createUser(user), performed -> {
-                                  log.info("Create result: {}", performed.description);
+                                  log.info("Create result: {}", performed.description());
                                   return complete(StatusCodes.CREATED, performed, Jackson.marshaller());
                                 })
                         )
@@ -87,7 +87,7 @@ public class UserRoutes {
                             //#retrieve-user-info
                             rejectEmptyResponse(() ->
                                 onSuccess(getUser(name), performed ->
-                                    complete(StatusCodes.OK, performed.maybeUser, Jackson.marshaller())
+                                    complete(StatusCodes.OK, performed.maybeUser(), Jackson.marshaller())
                                 )
                             )
                         //#retrieve-user-info
@@ -95,7 +95,7 @@ public class UserRoutes {
                     delete(() ->
                             //#users-delete-logic
                             onSuccess(deleteUser(name), performed -> {
-                                  log.info("Delete result: {}", performed.description);
+                                  log.info("Delete result: {}", performed.description());
                                   return complete(StatusCodes.OK, performed, Jackson.marshaller());
                                 }
                             )
