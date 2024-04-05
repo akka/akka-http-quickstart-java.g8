@@ -1,5 +1,7 @@
 ## Akka HTTP quickstart in Java
 
+The Akka family of projects is managed by teams at [Lightbend](https://lightbend.com/) with help from the community.
+
 Please see the [quickstart guide](https://developer.lightbend.com/guides/akka-http-quickstart-java/) for a
 walk through the code.
 
